@@ -2,10 +2,10 @@
 # See documentation: https://emiliano-gandini-outeda.me/DBWarden/
 
 # Database connection URL (required)
-sqlalchemy_url = "sqlite:///./development.db"
+sqlalchemy_url = "sqlite+aiosqlite:///./fingdb.db"
 
 # Enable async mode (true/false)
-async = false
+async = true
 
 # PostgreSQL schema (optional)
 # postgres_schema = "public"

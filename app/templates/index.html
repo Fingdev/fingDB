@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FingDB - Gestión de Materias</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; padding: 20px; }
+        .container { max-width: 1100px; margin: 0 auto; }
+        h1 { color: #333; margin-bottom: 20px; }
+        
+        .card { background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        
+        .form-row { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+        .form-group { flex: 1; min-width: 150px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 500; color: #555; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
+        .form-group textarea { min-height: 80px; resize: vertical; }
+        
+        button { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        .btn-primary { background: #2563eb; color: white; }
+        .btn-primary:hover { background: #1d4ed8; }
+        .btn-danger { background: #dc2626; color: white; }
+        .btn-danger:hover { background: #b91c1c; }
+        .btn-secondary { background: #6b7280; color: white; }
+        .btn-secondary:hover { background: #4b5563; }
+        .btn-sm { padding: 4px 8px; font-size: 12px; }
+        
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #f9fafb; font-weight: 600; color: #374151; }
+        tr:hover { background: #f9fafb; }
+        
+        .previas-badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 12px; margin: 2px; }
+        .previas-aprobado { background: #dbeafe; color: #1e40af; }
+        .previas-exonerado { background: #dcfce7; color: #166534; }
+        
+        .empty { text-align: center; color: #9ca3af; padding: 40px; }
+        .loading { opacity: 0.5; pointer-events: none; }
+        
+        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; padding: 20px; border-radius: 8px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .modal-header h2 { font-size: 18px; }
+        .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: #666; }
+        
+        .api-key-section { background: #fff7ed; border: 1px solid #fed7aa; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        .api-key-section label { display: block; margin-bottom: 5px; font-weight: 500; color: #9a3412; }
+        .api-key-section input { width: 100%; padding: 8px; border: 1px solid #fed7aa; border-radius: 4px; }
+        
+        .periodo-bimestral { color: #7c3aed; }
+        .periodo-par { color: #0891b2; }
+        .periodo-impar { color: #ca8a04; }
+        
+        .tabs { display: flex; gap: 0; margin-bottom: 20px; border-bottom: 2px solid #e5e7eb; }
+        .tab { padding: 12px 24px; background: none; border: none; cursor: pointer; font-size: 15px; color: #6b7280; border-bottom: 2px solid transparent; margin-bottom: -2px; }
+        .tab:hover { color: #374151; }
+        .tab.active { color: #2563eb; border-bottom-color: #2563eb; font-weight: 500; }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        .materias-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-top: 10px; }
+        .materia-checkbox { display: flex; align-items: center; gap: 8px; padding: 8px; border: 1px solid #e5e7eb; border-radius: 4px; cursor: pointer; }
+        .materia-checkbox:hover { background: #f9fafb; }
+        .materia-checkbox input { width: auto; }
+        
+        .obligatoria { color: #16a34a; }
+        .opcional { color: #2563eb; }
+        
+        .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-left: 8px; }
+        .tag-obligatoria { background: #dcfce7; color: #166534; }
+        .tag-opcional { background: #dbeafe; color: #1e40af; }
+        
+        .autocomplete-wrapper { position: relative; }
+        .autocomplete-input { width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
+        .autocomplete-dropdown { 
+            display: none; 
+            position: absolute; 
+            top: 100%; 
+            left: 0; 
+            right: 0; 
+            max-height: 200px; 
+            overflow-y: auto; 
+            background: white; 
+            border: 1px solid #ddd; 
+            border-radius: 4px; 
+            z-index: 100;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .autocomplete-dropdown.active { display: block; }
+        .autocomplete-item { padding: 8px 12px; cursor: pointer; }
+        .autocomplete-item:hover { background: #f9fafb; }
+        .autocomplete-item.selected { background: #dbeafe; color: #1e40af; }
+        
+        .selected-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+        .selected-tag { 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 6px; 
+            padding: 6px 10px; 
+            background: #e0e7ff; 
+            border: 1px solid #c7d2fe;
+            border-radius: 6px; 
+            font-size: 13px; 
+            color: #3730a3;
+        }
+        .selected-tag button { 
+            background: none; border: none; cursor: pointer; padding: 0; font-size: 16px; line-height: 1; color: #6366f1; 
+        }
+        .selected-tag button:hover { color: #dc2626; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 FingDB - Gestión de Materias</h1>
+        
+        <div class="api-key-section">
+            <label>🔑 API Key</label>
+            <input type="password" id="apiKey" placeholder="Ingresa tu API Key" value="dev_api_key_12345">
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('materias')">Materias</button>
+            <button class="tab" onclick="switchTab('carreras')">Carreras</button>
+            <button class="tab" onclick="switchTab('perfiles')">Perfiles</button>
+            <button class="tab" onclick="switchTab('institutos')">Institutos</button>
+        </div>
+        
+        <!-- TAB MATERIAS -->
+        <div id="tab-materias" class="tab-content active">
+            <div class="card">
+                <h2 style="margin-bottom: 15px;">Nueva Materia</h2>
+                <form id="createMateriaForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Nombre</label>
+                            <input type="text" name="name" required placeholder="Ej: Matemáticas I">
+                        </div>
+                        <div class="form-group">
+                            <label>Período</label>
+                            <select name="periodo" required>
+                                <option value="bisemestral">Bisemestral</option>
+                                <option value="par">Par</option>
+                                <option value="impar">Impar</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Créditos</label>
+                            <input type="number" name="creditos" required min="0" value="0" placeholder="Ej: 10">
+                        </div>
+                        <div class="form-group">
+                            <label>Instituto</label>
+                            <select name="instituto_id" id="materiaInstitutoSelect" required>
+                                <option value="">Seleccionar...</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Previas Aprobadas</label>
+                            <div class="autocomplete-wrapper">
+                                <input type="text" id="previasAprobadoInput" class="autocomplete-input" placeholder="Buscar materia...">
+                                <div class="autocomplete-dropdown" id="previasAprobadoDropdown"></div>
+                                <div class="selected-tags" id="previasAprobadoTags"></div>
+                            </div>
+                            <input type="hidden" name="previas_aprobado" id="previasAprobadoHidden">
+                        </div>
+                        <div class="form-group">
+                            <label>Previas Exoneradas</label>
+                            <div class="autocomplete-wrapper">
+                                <input type="text" id="previasExoneradoInput" class="autocomplete-input" placeholder="Buscar materia...">
+                                <div class="autocomplete-dropdown" id="previasExoneradoDropdown"></div>
+                                <div class="selected-tags" id="previasExoneradoTags"></div>
+                            </div>
+                            <input type="hidden" name="previas_exonerado" id="previasExoneradoHidden">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary">➕ Crear Materia</button>
+                </form>
+            </div>
+            
+            <div class="card">
+                <h2 style="margin-bottom: 15px;">Lista de Materias</h2>
+                <div style="margin-bottom: 15px;">
+                    <input type="text" id="searchMateria" placeholder="Buscar materia..." style="width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;" oninput="filterMaterias()">
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Período</th>
+                            <th>Créditos</th>
+                            <th>Previas</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="materiasList">
+                        <tr><td colspan="6" class="empty">Cargando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- TAB CARRERAS -->
+        <div id="tab-carreras" class="tab-content">
+            <div class="card">
+                <h2 style="margin-bottom: 15px;">Nueva Carrera</h2>
+                <form id="createCarreraForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Nombre de la Carrera</label>
+                            <input type="text" name="name" required placeholder="Ej: Ingeniería en Computación">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Materias Obligatorias</label>
+                            <div class="autocomplete-wrapper">
+                                <input type="text" id="carreraObligatoriasInput" class="autocomplete-input" placeholder="Buscar materia...">
+                                <div class="autocomplete-dropdown" id="carreraObligatoriasDropdown"></div>
+                                <div class="selected-tags" id="carreraObligatoriasTags"></div>
+                            </div>
+                            <input type="hidden" name="materias_obligatorias" id="carreraObligatoriasHidden">
+                        </div>
+                        <div class="form-group">
+                            <label>Materias Opcionales</label>
+                            <div class="autocomplete-wrapper">
+                                <input type="text" id="carreraOpcionalesInput" class="autocomplete-input" placeholder="Buscar materia...">
+                                <div class="autocomplete-dropdown" id="carreraOpcionalesDropdown"></div>
+                                <div class="selected-tags" id="carreraOpcionalesTags"></div>
+                            </div>
+                            <input type="hidden" name="materias_opcionales" id="carreraOpcionalesHidden">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary">➕ Crear Carrera</button>
+                </form>
+            </div>
+            
+            <div class="card">
+                <h2 style="margin-bottom: 15px;">Lista de Carreras</h2>
+                <div id="carrerasList">
+                    <div class="empty">Cargando...</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- TAB PERFILES -->
+        <div id="tab-perfiles" class="tab-content">
+            <div class="card">
+                <h2 style="margin-bottom: 15px;">Nuevo Perfil</h2>
+                <form id="createPerfilForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Nombre del Perfil</label>
+                            <input type="text" name="name" required placeholder="Ej: Sistemas Embebidos">
+                        </div>
+                        <div class="form-group">
+                            <label>Carrera</label>
+                            <select name="carrera_id" id="perfilCarreraSelect" required>
+                                <option value="">Seleccionar...</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Materias Obligatorias del Perfil</label>
+                            <div class="autocomplete-wrapper">
+                                <input type="text" id="perfilObligatoriasInput" class="autocomplete-input" placeholder="Buscar materia...">
+                                <div class="autocomplete-dropdown" id="perfilObligatoriasDropdown"></div>
+                                <div class="selected-tags" id="perfilObligatoriasTags"></div>
+                            </div>
+                            <input type="hidden" name="materias_obligatorias" id="perfilObligatoriasHidden">
+                            <small style="color: #6b7280;">Estas materias eran opcionales en la carrera pero son obligatorias en este perfil</small>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary">➕ Crear Perfil</button>
+                </form>
+            </div>
+            
+            <div class="card">
+                <h2 style="margin-bottom: 15px;">Lista de Perfiles por Carrera</h2>
+                <div id="perfilesList">
+                    <div class="empty">Cargando...</div>
+                </div>
+            </div>
+        </div>
+        </div>
+        
+        <!-- TAB INSTITUTOS -->
+        <div id="tab-institutos" class="tab-content">
+            <div class="card">
+                <h2 style="margin-bottom: 15px;">Nuevo Instituto</h2>
+                <form id="createInstitutoForm">
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 1;">
+                            <label>Nombre</label>
+                            <input type="text" name="name" required placeholder="Ej: Instituto de Computación">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary">➕ Crear Instituto</button>
+                </form>
+            </div>
+            
+            <div class="card">
+                <h2 style="margin-bottom: 15px;">Lista de Institutos</h2>
+                <table id="institutosTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="institutosTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Modal de edición materia -->
+        <div class="modal" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>✏️ Editar Materia</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="editForm">
+                <input type="hidden" name="id" id="editId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nombre</label>
+                        <input type="text" name="name" id="editName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Período</label>
+                        <select name="periodo" id="editPeriodo" required>
+                            <option value="bisemestral">Bisemestral</option>
+                            <option value="par">Par</option>
+                            <option value="impar">Impar</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Créditos</label>
+                        <input type="number" name="creditos" id="editCreditos" required min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Instituto</label>
+                        <select name="instituto_id" id="editInstitutoSelect" required>
+                            <option value="">Seleccionar...</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Previas Aprobadas</label>
+                        <div class="autocomplete-wrapper">
+                            <input type="text" id="editPreviasAprobadoInput" class="autocomplete-input" placeholder="Buscar materia...">
+                            <div class="autocomplete-dropdown" id="editPreviasAprobadoDropdown"></div>
+                            <div class="selected-tags" id="editPreviasAprobadoTags"></div>
+                        </div>
+                        <input type="hidden" name="previas_aprobado" id="editPreviasAprobadoHidden">
+                    </div>
+                    <div class="form-group">
+                        <label>Previas Exoneradas</label>
+                        <div class="autocomplete-wrapper">
+                            <input type="text" id="editPreviasExoneradoInput" class="autocomplete-input" placeholder="Buscar materia...">
+                            <div class="autocomplete-dropdown" id="editPreviasExoneradoDropdown"></div>
+                            <div class="selected-tags" id="editPreviasExoneradoTags"></div>
+                        </div>
+                        <input type="hidden" name="previas_exonerado" id="editPreviasExoneradoHidden">
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary">💾 Guardar</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal de edición carrera -->
+    <div class="modal" id="editCarreraModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>✏️ Editar Carrera</h2>
+                <button class="modal-close" onclick="closeEditCarreraModal()">&times;</button>
+            </div>
+            <form id="editCarreraForm">
+                <input type="hidden" name="id" id="editCarreraId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nombre de la Carrera</label>
+                        <input type="text" name="name" id="editCarreraName" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Materias Obligatorias</label>
+                        <div class="autocomplete-wrapper">
+                            <input type="text" id="editCarreraObligatoriasInput" class="autocomplete-input" placeholder="Buscar materia...">
+                            <div class="autocomplete-dropdown" id="editCarreraObligatoriasDropdown"></div>
+                            <div class="selected-tags" id="editCarreraObligatoriasTags"></div>
+                        </div>
+                        <input type="hidden" name="materias_obligatorias" id="editCarreraObligatoriasHidden">
+                    </div>
+                    <div class="form-group">
+                        <label>Materias Opcionales</label>
+                        <div class="autocomplete-wrapper">
+                            <input type="text" id="editCarreraOpcionalesInput" class="autocomplete-input" placeholder="Buscar materia...">
+                            <div class="autocomplete-dropdown" id="editCarreraOpcionalesDropdown"></div>
+                            <div class="selected-tags" id="editCarreraOpcionalesTags"></div>
+                        </div>
+                        <input type="hidden" name="materias_opcionales" id="editCarreraOpcionalesHidden">
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary">💾 Guardar</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal de edición perfil -->
+    <div class="modal" id="editPerfilModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>✏️ Editar Perfil</h2>
+                <button class="modal-close" onclick="closeEditPerfilModal()">&times;</button>
+            </div>
+            <form id="editPerfilForm">
+                <input type="hidden" name="id" id="editPerfilId">
+                <input type="hidden" name="carrera_id" id="editPerfilCarreraId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nombre del Perfil</label>
+                        <input type="text" name="name" id="editPerfilName" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Materias Obligatorias del Perfil</label>
+                        <div class="autocomplete-wrapper">
+                            <input type="text" id="editPerfilObligatoriasInput" class="autocomplete-input" placeholder="Buscar materia...">
+                            <div class="autocomplete-dropdown" id="editPerfilObligatoriasDropdown"></div>
+                            <div class="selected-tags" id="editPerfilObligatoriasTags"></div>
+                        </div>
+                        <input type="hidden" name="materias_obligatorias" id="editPerfilObligatoriasHidden">
+                        <small style="color: #6b7280;">Estas materias eran opcionales en la carrera pero son obligatorias en este perfil</small>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary">💾 Guardar</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_KEY = () => document.getElementById('apiKey').value;
+        const BASE_URL = '';
+        
+        function getHeaders() {
+            return {
+                'Content-Type': 'application/json',
+                'X-API-Key': API_KEY()
+            };
+        }
+        
+        function removeAccents(str) {
+            if (!str) return '';
+            return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        }
+        
+// --- AUTOCOMPLETE SIMPLE ---
+        var Autocomplete = function(inputEl, dropdownEl, tagsEl, hiddenEl) {
+            this.input = inputEl;
+            this.dropdown = dropdownEl;
+            this.tags = tagsEl;
+            this.hidden = hiddenEl;
+            this.selected = [];
+            this.setup();
+        };
+        
+        Autocomplete.prototype.setup = function() {
+            var self = this;
+            
+            this.input.addEventListener('input', function() {
+                self.onInput();
+            });
+            
+            this.input.addEventListener('focus', function() {
+                if (self.input.value.trim().length > 0) {
+                    self.onInput();
+                }
+            });
+            
+            this.input.addEventListener('blur', function() {
+                setTimeout(function() {
+                    self.dropdown.style.display = 'none';
+                }, 200);
+            });
+            
+            this.dropdown.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+                var item = e.target;
+                if (item.classList.contains('autocomplete-item')) {
+                    var id = parseInt(item.getAttribute('data-id'));
+                    var name = item.getAttribute('data-name');
+                    self.addItem({id: id, name: name});
+                }
+            });
+        };
+        
+        Autocomplete.prototype.onInput = function() {
+            var q = this.input.value.toLowerCase().trim();
+            var qNoAccents = removeAccents(q);
+            if (q.length === 0) {
+                this.dropdown.style.display = 'none';
+                return;
+            }
+            
+            // Check if materias are loaded
+            if (!window.allMaterias || window.allMaterias.length === 0) {
+                this.dropdown.innerHTML = '<div class="autocomplete-item" style="color:#9ca3af">Cargando materias...</div>';
+                this.dropdown.style.display = 'block';
+                return;
+            }
+            
+            var self = this;
+            var filtered = window.allMaterias.filter(function(m) {
+                var alreadySelected = self.selected.some(function(s) { return s.id === m.id; });
+                var nameNoAccents = removeAccents(m.name.toLowerCase());
+                return !alreadySelected && nameNoAccents.indexOf(qNoAccents) !== -1;
+            }).slice(0, 10);
+            
+            if (filtered.length === 0) {
+                this.dropdown.innerHTML = '<div class="autocomplete-item" style="color:#9ca3af">Sin resultados</div>';
+            } else {
+                this.dropdown.innerHTML = filtered.map(function(m) {
+                    return '<div class="autocomplete-item" data-id="' + m.id + '" data-name="' + m.name + '">' + m.name + ' <small style="color:#6b7280">(' + m.periodo + ')</small></div>';
+                }).join('');
+            }
+            this.dropdown.style.display = 'block';
+        };
+        
+        Autocomplete.prototype.addItem = function(item) {
+            var self = this;
+            var exists = this.selected.some(function(s) { return s.id === item.id; });
+            if (exists) return;
+            
+            this.selected.push(item);
+            this.renderTags();
+            this.hidden.value = this.selected.map(function(i) { return i.id; }).join(',');
+            this.input.value = '';
+            this.dropdown.style.display = 'none';
+        };
+        
+        Autocomplete.prototype.removeItem = function(id) {
+            this.selected = this.selected.filter(function(i) { return i.id !== id; });
+            this.renderTags();
+            this.hidden.value = this.selected.map(function(i) { return i.id; }).join(',');
+        };
+        
+        Autocomplete.prototype.renderTags = function() {
+            var self = this;
+            this.tags.innerHTML = this.selected.map(function(item) {
+                return '<span class="selected-tag">' + item.name + ' <button type="button" data-id="' + item.id + '">&times;</button></span>';
+            }).join('');
+            
+            var buttons = this.tags.querySelectorAll('button');
+            buttons.forEach(function(btn) {
+                btn.onclick = function() {
+                    var id = parseInt(this.getAttribute('data-id'));
+                    self.removeItem(id);
+                };
+            });
+        };
+        
+        Autocomplete.prototype.setSelected = function(ids) {
+            var self = this;
+            this.selected = ids.map(function(pid) {
+                var m = window.allMaterias.find(function(x) { return x.id === pid; });
+                return m ? {id: m.id, name: m.name} : {id: pid, name: 'ID: ' + pid};
+            });
+            this.renderTags();
+            this.hidden.value = ids.join(',');
+        };
+        
+        var autocompleteInstances = {};
+        
+        function createAutocomplete(inputId, dropdownId, tagsId, hiddenId) {
+            var instance = new Autocomplete(
+                document.getElementById(inputId),
+                document.getElementById(dropdownId),
+                document.getElementById(tagsId),
+                document.getElementById(hiddenId)
+            );
+            autocompleteInstances[inputId] = instance;
+            return instance;
+        }
+        
+        function initAllAutocompletes() {
+            createAutocomplete('previasAprobadoInput', 'previasAprobadoDropdown', 'previasAprobadoTags', 'previasAprobadoHidden');
+            createAutocomplete('previasExoneradoInput', 'previasExoneradoDropdown', 'previasExoneradoTags', 'previasExoneradoHidden');
+            createAutocomplete('carreraObligatoriasInput', 'carreraObligatoriasDropdown', 'carreraObligatoriasTags', 'carreraObligatoriasHidden');
+            createAutocomplete('carreraOpcionalesInput', 'carreraOpcionalesDropdown', 'carreraOpcionalesTags', 'carreraOpcionalesHidden');
+            createAutocomplete('perfilObligatoriasInput', 'perfilObligatoriasDropdown', 'perfilObligatoriasTags', 'perfilObligatoriasHidden');
+        }
+        
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.tab[onclick="switchTab('${tab}')"]`).classList.add('active');
+            document.getElementById(`tab-${tab}`).classList.add('active');
+            
+            // Always ensure materias are loaded for autocomplete
+            if (!window.allMaterias || window.allMaterias.length === 0) {
+                loadMaterias().then(function() {
+                    initTab(tab);
+                });
+            } else {
+                initTab(tab);
+            }
+        }
+        
+        function initTab(tab) {
+            if (tab === 'materias') {
+                loadMaterias();
+            } else if (tab === 'carreras') {
+                loadCarreras();
+            } else if (tab === 'perfiles') {
+                loadPerfiles();
+            } else if (tab === 'institutos') {
+                loadInstitutos();
+            }
+        }
+        
+        // --- MATERIAS ---
+        async function loadMaterias() {
+            try {
+                const res = await fetch(`${BASE_URL}/materias/all/con-previas`, {
+                    headers: getHeaders()
+                });
+                if (!res.ok) throw new Error('Error cargando');
+                const materias = await res.json();
+                window.allMaterias = materias.sort((a, b) => a.id - b.id);
+                renderMaterias(window.allMaterias);
+                initAllAutocompletes();
+            }
+            catch (e) {
+                document.getElementById('materiasList').innerHTML = 
+                    `<tr><td colspan="6" class="empty">Error: ${e.message}</td></tr>`;
+            }
+        }
+        
+        function filterMaterias() {
+            const query = removeAccents(document.getElementById('searchMateria').value.toLowerCase());
+            const filtered = window.allMaterias.filter(m => 
+                removeAccents(m.name.toLowerCase()).includes(query) ||
+                (m.creditos && m.creditos.toString().includes(query))
+            );
+            renderMaterias(filtered);
+        }
+        
+        function renderMaterias(materias) {
+            if (materias.length === 0) {
+                document.getElementById('materiasList').innerHTML = 
+                    '<tr><td colspan="6" class="empty">No hay materias</td></tr>';
+                return;
+            }
+            
+            document.getElementById('materiasList').innerHTML = materias.map(m => {
+                const periodoClass = `periodo-${m.periodo}`;
+                const periodoLabel = { bisemestral: 'Bisemestral', par: 'Par', impar: 'Impar' }[m.periodo] || m.periodo;
+                
+                let previasHtml = '';
+                if ((m.previas_aprobado && m.previas_aprobado.length > 0)) {
+                    previasHtml += m.previas_aprobado.map(p => 
+                        `<span class="previas-badge previas-aprobado">${p.name}</span>`
+                    ).join('');
+                }
+                if ((m.previas_exonerado && m.previas_exonerado.length > 0)) {
+                    previasHtml += m.previas_exonerado.map(p => 
+                        `<span class="previas-badge previas-exonerado">${p.name}</span>`
+                    ).join('');
+                }
+                
+                return `
+                    <tr>
+                        <td>${m.id}</td>
+                        <td><strong>${m.name}</strong></td>
+                        <td class="${periodoClass}">${periodoLabel}</td>
+                        <td>${m.creditos || 0}</td>
+                        <td>${window.institutoMap && window.institutoMap[m.instituto_id] ? window.institutoMap[m.instituto_id] : (m.instituto_id || '-')}</td>
+                        <td>${previasHtml || '<span style="color:#9ca3af">Sin previas</span>'}</td>
+                        <td>
+                            <button class="btn-secondary btn-sm" onclick="openEdit(${m.id}, '${m.name}', '${m.periodo}', ${JSON.stringify(m.previas_aprobado.map(p => p.id))}, ${JSON.stringify(m.previas_exonerado.map(p => p.id))}, ${m.creditos || 0}, ${m.instituto_id || 0})">✏️</button>
+                            <button class="btn-danger btn-sm" onclick="deleteMateria(${m.id})">🗑️</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        document.getElementById('createMateriaForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const btn = e.target.querySelector('button');
+            btn.disabled = true;
+            btn.textContent = 'Creando...';
+            
+            try {
+                const res = await fetch(`${BASE_URL}/materias`, {
+                    method: 'POST',
+                    headers: getHeaders(),
+                    body: JSON.stringify(Object.fromEntries(formData))
+                });
+                if (!res.ok) throw new Error('Error creando');
+                e.target.reset();
+                // Explicitly clear hidden inputs (reset() may not clear them)
+                document.getElementById('previasAprobadoHidden').value = '';
+                document.getElementById('previasExoneradoHidden').value = '';
+                // Clear autocompletes
+                if (autocompleteInstances['previasAprobadoInput']) {
+                    autocompleteInstances['previasAprobadoInput'].selected = [];
+                    autocompleteInstances['previasAprobadoInput'].renderTags();
+                }
+                if (autocompleteInstances['previasExoneradoInput']) {
+                    autocompleteInstances['previasExoneradoInput'].selected = [];
+                    autocompleteInstances['previasExoneradoInput'].renderTags();
+                }
+                loadMaterias();
+            } catch (e) {
+                alert('Error: ' + e.message);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '➕ Crear Materia';
+            }
+        });
+        
+        function openEdit(id, name, periodo, previasAprobado, previasExonerado, creditos = 0, institutoId = 0) {
+            document.getElementById('editId').value = id;
+            document.getElementById('editName').value = name;
+            document.getElementById('editPeriodo').value = periodo;
+            document.getElementById('editCreditos').value = creditos;
+            
+            // Set the Instituto select
+            setTimeout(function() {
+                document.getElementById('editInstitutoSelect').value = institutoId || '';
+            }, 0);
+            
+            // Initialize edit autocompletes if not already done
+            if (!autocompleteInstances['editPreviasAprobadoInput']) {
+                createAutocomplete('editPreviasAprobadoInput', 'editPreviasAprobadoDropdown', 'editPreviasAprobadoTags', 'editPreviasAprobadoHidden');
+                createAutocomplete('editPreviasExoneradoInput', 'editPreviasExoneradoDropdown', 'editPreviasExoneradoTags', 'editPreviasExoneradoHidden');
+            }
+            
+            // Set existing selections
+            autocompleteInstances['editPreviasAprobadoInput'].setSelected(previasAprobado);
+            autocompleteInstances['editPreviasExoneradoInput'].setSelected(previasExonerado);
+            
+            document.getElementById('editModal').classList.add('active');
+        }
+        
+        function closeModal() {
+            document.getElementById('editModal').classList.remove('active');
+            // Clear edit autocomplete states
+            if (autocompleteInstances['editPreviasAprobadoInput']) {
+                autocompleteInstances['editPreviasAprobadoInput'].selected = [];
+                autocompleteInstances['editPreviasAprobadoInput'].renderTags();
+                autocompleteInstances['editPreviasAprobadoInput'].input.value = '';
+            }
+            if (autocompleteInstances['editPreviasExoneradoInput']) {
+                autocompleteInstances['editPreviasExoneradoInput'].selected = [];
+                autocompleteInstances['editPreviasExoneradoInput'].renderTags();
+                autocompleteInstances['editPreviasExoneradoInput'].input.value = '';
+            }
+        }
+        
+        function openEditCarrera(id, name, obligatorias, opcionales) {
+            document.getElementById('editCarreraId').value = id;
+            document.getElementById('editCarreraName').value = name;
+            
+            // Init autocomplete if needed
+            if (!autocompleteInstances['editCarreraObligatoriasInput']) {
+                createAutocomplete('editCarreraObligatoriasInput', 'editCarreraObligatoriasDropdown', 'editCarreraObligatoriasTags', 'editCarreraObligatoriasHidden');
+                createAutocomplete('editCarreraOpcionalesInput', 'editCarreraOpcionalesDropdown', 'editCarreraOpcionalesTags', 'editCarreraOpcionalesHidden');
+            }
+            
+            autocompleteInstances['editCarreraObligatoriasInput'].setSelected(obligatorias);
+            autocompleteInstances['editCarreraOpcionalesInput'].setSelected(opcionales);
+            
+            document.getElementById('editCarreraModal').classList.add('active');
+        }
+        
+        function closeEditCarreraModal() {
+            document.getElementById('editCarreraModal').classList.remove('active');
+            if (autocompleteInstances['editCarreraObligatoriasInput']) {
+                autocompleteInstances['editCarreraObligatoriasInput'].selected = [];
+                autocompleteInstances['editCarreraObligatoriasInput'].renderTags();
+                autocompleteInstances['editCarreraObligatoriasInput'].input.value = '';
+            }
+            if (autocompleteInstances['editCarreraOpcionalesInput']) {
+                autocompleteInstances['editCarreraOpcionalesInput'].selected = [];
+                autocompleteInstances['editCarreraOpcionalesInput'].renderTags();
+                autocompleteInstances['editCarreraOpcionalesInput'].input.value = '';
+            }
+        }
+        
+        function openEditPerfil(id, name, carreraId, obligatorias) {
+            document.getElementById('editPerfilId').value = id;
+            document.getElementById('editPerfilName').value = name;
+            document.getElementById('editPerfilCarreraId').value = carreraId;
+            
+            // Init autocomplete if needed
+            if (!autocompleteInstances['editPerfilObligatoriasInput']) {
+                createAutocomplete('editPerfilObligatoriasInput', 'editPerfilObligatoriasDropdown', 'editPerfilObligatoriasTags', 'editPerfilObligatoriasHidden');
+            }
+            
+            autocompleteInstances['editPerfilObligatoriasInput'].setSelected(obligatorias);
+            
+            document.getElementById('editPerfilModal').classList.add('active');
+        }
+        
+        function closeEditPerfilModal() {
+            document.getElementById('editPerfilModal').classList.remove('active');
+            if (autocompleteInstances['editPerfilObligatoriasInput']) {
+                autocompleteInstances['editPerfilObligatoriasInput'].selected = [];
+                autocompleteInstances['editPerfilObligatoriasInput'].renderTags();
+                autocompleteInstances['editPerfilObligatoriasInput'].input.value = '';
+            }
+        }
+        
+        document.getElementById('editForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('editId').value;
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+            
+            try {
+                const res = await fetch(`${BASE_URL}/materias/${id}`, {
+                    method: 'PATCH',
+                    headers: getHeaders(),
+                    body: JSON.stringify(data)
+                });
+                if (!res.ok) throw new Error('Error actualizando');
+                closeModal();
+                loadMaterias();
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+        });
+        
+        async function deleteMateria(id) {
+            if (!confirm('¿Eliminar esta materia?')) return;
+            
+            try {
+                const res = await fetch(`${BASE_URL}/materias/${id}`, {
+                    method: 'DELETE',
+                    headers: getHeaders()
+                });
+                if (!res.ok) throw new Error('Error eliminando');
+                loadMaterias();
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+        }
+        
+        // --- CARRERAS ---
+        async function loadCarreras() {
+            try {
+                const res = await fetch(`${BASE_URL}/carreras`, {
+                    headers: getHeaders()
+                });
+                if (!res.ok) throw new Error('Error cargando');
+                const carreras = await res.json();
+                renderCarreras(carreras);
+                updatePerfilCarreraSelect(carreras);
+            }
+            catch (e) {
+                document.getElementById('carrerasList').innerHTML = `<div class="empty">Error: ${e.message}</div>`;
+            }
+        }
+        
+        function renderCarreras(carreras) {
+            if (carreras.length === 0) {
+                document.getElementById('carrerasList').innerHTML = '<div class="empty">No hay carreras</div>';
+                return;
+            }
+            
+            document.getElementById('carrerasList').innerHTML = carreras.map(c => `
+                <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 15px; margin-bottom: 15px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <h3 style="margin: 0;">${c.name}</h3>
+                        <div>
+                            <button class="btn-secondary btn-sm" onclick="openEditCarrera(${c.id}, '${c.name.replace(/'/g, "\\'")}', [${c.materias_obligatorias.map(m => m.id).join(',')}], [${c.materias_opcionales.map(m => m.id).join(',')}])">✏️ Editar</button>
+                            <button class="btn-danger btn-sm" onclick="deleteCarrera(${c.id})">🗑️ Eliminar</button>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <strong>Obligatorias (${c.materias_obligatorias.length}):</strong>
+                        ${c.materias_obligatorias.length > 0 
+                            ? c.materias_obligatorias.map(m => `<span class="tag tag-obligatoria">${m.name}</span>`).join(' ')
+                            : '<span style="color:#9ca3af">Ninguna</span>'}
+                    </div>
+                    <div>
+                        <strong>Opcionales (${c.materias_opcionales.length}):</strong>
+                        ${c.materias_opcionales.length > 0 
+                            ? c.materias_opcionales.map(m => `<span class="tag tag-opcional">${m.name}</span>`).join(' ')
+                            : '<span style="color:#9ca3af">Ninguna</span>'}
+                    </div>
+                    ${c.perfiles && c.perfiles.length > 0 ? `
+                        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #e5e7eb;">
+                            <strong>Perfiles (${c.perfiles.length}):</strong>
+                            ${c.perfiles.map(p => `<span class="tag" style="background:#fce7f3; color:#9d174d;">${p.name}</span>`).join(' ')}
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+        
+        function updatePerfilCarreraSelect(carreras) {
+            const select = document.getElementById('perfilCarreraSelect');
+            select.innerHTML = '<option value="">Seleccionar...</option>' + 
+                carreras.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+        }
+        
+        document.getElementById('createCarreraForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const btn = e.target.querySelector('button');
+            btn.disabled = true;
+            btn.textContent = 'Creando...';
+            
+            try {
+                const res = await fetch(`${BASE_URL}/carreras`, {
+                    method: 'POST',
+                    headers: getHeaders(),
+                    body: JSON.stringify(Object.fromEntries(formData))
+                });
+                if (!res.ok) throw new Error('Error creando');
+                e.target.reset();
+                // Clear autocompletes
+                if (autocompleteInstances['carreraObligatoriasInput']) {
+                    autocompleteInstances['carreraObligatoriasInput'].selected = [];
+                    autocompleteInstances['carreraObligatoriasInput'].renderTags();
+                }
+                if (autocompleteInstances['carreraOpcionalesInput']) {
+                    autocompleteInstances['carreraOpcionalesInput'].selected = [];
+                    autocompleteInstances['carreraOpcionalesInput'].renderTags();
+                }
+                loadCarreras();
+            } catch (e) {
+                alert('Error: ' + e.message);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '➕ Crear Carrera';
+            }
+        });
+        
+        async function deleteCarrera(id) {
+            if (!confirm('¿Eliminar esta carrera?')) return;
+            
+            try {
+                const res = await fetch(`${BASE_URL}/carreras/${id}`, {
+                    method: 'DELETE',
+                    headers: getHeaders()
+                });
+                if (!res.ok) throw new Error('Error eliminando');
+                loadCarreras();
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+        }
+        
+        // --- PERFILES ---
+        async function loadPerfiles() {
+            try {
+                const res = await fetch(`${BASE_URL}/carreras`, {
+                    headers: getHeaders()
+                });
+                if (!res.ok) throw new Error('Error cargando');
+                const carreras = await res.json();
+                renderPerfiles(carreras);
+            }
+            catch (e) {
+                document.getElementById('perfilesList').innerHTML = `<div class="empty">Error: ${e.message}</div>`;
+            }
+        }
+        
+        async function renderPerfiles(carreras) {
+            let html = '';
+            
+            for (const c of carreras) {
+                if (!c.perfiles || c.perfiles.length === 0) continue;
+                
+                for (const p of c.perfiles) {
+                    try {
+                        const res = await fetch(`${BASE_URL}/perfiles/by-carrera/${c.id}`, {
+                            headers: getHeaders()
+                        });
+                        const perfiles = await res.json();
+                        const perfil = perfiles.find(pf => pf.id === p.id);
+                        
+                        if (perfil) {
+                            html += `
+                                <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 15px; margin-bottom: 15px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                        <h3 style="margin: 0;">${perfil.name} <span style="font-weight:normal; color:#6b7280;">(${c.name})</span></h3>
+                                        <div>
+                                            <button class="btn-secondary btn-sm" onclick="openEditPerfil(${perfil.id}, '${perfil.name.replace(/'/g, "\\'")}', ${c.id}, [${perfil.materias_obligatorias.map(m => m.id).join(',')}])">✏️ Editar</button>
+                                            <button class="btn-danger btn-sm" onclick="deletePerfil(${perfil.id})">🗑️ Eliminar</button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <strong>Materias Obligatorias:</strong>
+                                        ${perfil.materias_obligatorias.length > 0 
+                                            ? perfil.materias_obligatorias.map(m => `<span class="tag tag-obligatoria">${m.name}</span>`).join(' ')
+                                            : '<span style="color:#9ca3af">Ninguna</span>'}
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    } catch (e) {
+                        console.error(e);
+                    }
+                }
+            }
+            
+            document.getElementById('perfilesList').innerHTML = html || '<div class="empty">No hay perfiles</div>';
+        }
+        
+        document.getElementById('createPerfilForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const btn = e.target.querySelector('button');
+            btn.disabled = true;
+            btn.textContent = 'Creando...';
+            
+            try {
+                const res = await fetch(`${BASE_URL}/perfiles`, {
+                    method: 'POST',
+                    headers: getHeaders(),
+                    body: JSON.stringify(Object.fromEntries(formData))
+                });
+                if (!res.ok) throw new Error('Error creando');
+                e.target.reset();
+                // Clear autocomplete
+                if (autocompleteInstances['perfilObligatoriasInput']) {
+                    autocompleteInstances['perfilObligatoriasInput'].selected = [];
+                    autocompleteInstances['perfilObligatoriasInput'].renderTags();
+                }
+                loadPerfiles();
+            } catch (e) {
+                alert('Error: ' + e.message);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '➕ Crear Perfil';
+            }
+        });
+        
+        // Edit Carrera Form
+        document.getElementById('editCarreraForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('editCarreraId').value;
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+            
+            try {
+                const res = await fetch(`${BASE_URL}/carreras/${id}`, {
+                    method: 'PATCH',
+                    headers: getHeaders(),
+                    body: JSON.stringify(data)
+                });
+                if (!res.ok) throw new Error('Error actualizando');
+                closeEditCarreraModal();
+                loadCarreras();
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+        });
+        
+        // Edit Perfil Form
+        document.getElementById('editPerfilForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('editPerfilId').value;
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+            
+            try {
+                const res = await fetch(`${BASE_URL}/perfiles/${id}`, {
+                    method: 'PATCH',
+                    headers: getHeaders(),
+                    body: JSON.stringify(data)
+                });
+                if (!res.ok) throw new Error('Error actualizando');
+                closeEditPerfilModal();
+                loadPerfiles();
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+        });
+        
+        async function deletePerfil(id) {
+            if (!confirm('¿Eliminar este perfil?')) return;
+            
+            try {
+                const res = await fetch(`${BASE_URL}/perfiles/${id}`, {
+                    method: 'DELETE',
+                    headers: getHeaders()
+                });
+                if (!res.ok) throw new Error('Error eliminando');
+                loadPerfiles();
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+        }
+        
+        // --- INSTITUTOS ---
+        async function loadInstitutos() {
+            try {
+                const res = await fetch(`${BASE_URL}/institutos`, {
+                    headers: getHeaders()
+                });
+                if (!res.ok) throw new Error('Error cargando');
+                const institutos = await res.json();
+                renderInstitutos(institutos);
+                updateInstitutoSelects(institutos);
+            }
+            catch (e) {
+                document.getElementById('institutosTableBody').innerHTML = `<tr><td colspan="3" class="empty">Error: ${e.message}</td></tr>`;
+            }
+        }
+        
+        function renderInstitutos(institutos) {
+            if (institutos.length === 0) {
+                document.getElementById('institutosTableBody').innerHTML = '<tr><td colspan="3" class="empty">No hay institutos</td></tr>';
+                return;
+            }
+            
+            // Create a map for fast lookup in renderMaterias
+            window.institutoMap = {};
+            institutos.forEach(i => { window.institutoMap[i.id] = i.name; });
+            
+            document.getElementById('institutosTableBody').innerHTML = institutos.map(i => `
+                <tr>
+                    <td>${i.id}</td>
+                    <td>${i.name}</td>
+                    <td>
+                        <button class="btn-secondary btn-sm" onclick="openEditInstituto(${i.id}, '${i.name.replace(/'/g, "\\'")}')">✏️ Editar</button>
+                        <button class="btn-danger btn-sm" onclick="deleteInstituto(${i.id})">🗑️ Eliminar</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        function updateInstitutoSelects(institutos) {
+            const options = '<option value="">Seleccionar...</option>' + institutos.map(i => `<option value="${i.id}">${i.name}</option>`).join('');
+            
+            const createSelect = document.getElementById('materiaInstitutoSelect');
+            if (createSelect) createSelect.innerHTML = options;
+            
+            const editSelect = document.getElementById('editInstitutoSelect');
+            if (editSelect) editSelect.innerHTML = options;
+        }
+        
+        document.getElementById('createInstitutoForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const btn = e.target.querySelector('button');
+            btn.disabled = true;
+            btn.textContent = 'Creando...';
+            
+            try {
+                const res = await fetch(`${BASE_URL}/institutos`, {
+                    method: 'POST',
+                    headers: getHeaders(),
+                    body: JSON.stringify(Object.fromEntries(formData))
+                });
+                if (!res.ok) throw new Error('Error creando');
+                e.target.reset();
+                loadInstitutos();
+            } catch (e) {
+                alert('Error: ' + e.message);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '➕ Crear Instituto';
+            }
+        });
+        
+        function openEditInstituto(id, name) {
+            const newName = prompt('Nombre del Instituto:', name);
+            if (newName === null || newName.trim() === '') return;
+            
+            fetch(`${BASE_URL}/institutos/${id}`, {
+                method: 'PATCH',
+                headers: getHeaders(),
+                body: JSON.stringify({ name: newName.trim() })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error('Error actualizando');
+                loadInstitutos();
+            })
+            .catch(e => alert('Error: ' + e.message));
+        }
+        
+        async function deleteInstituto(id) {
+            if (!confirm('¿Eliminar este instituto? Las materias asociadas también se eliminarán.')) return;
+            
+            try {
+                const res = await fetch(`${BASE_URL}/institutos/${id}`, {
+                    method: 'DELETE',
+                    headers: getHeaders()
+                });
+                if (!res.ok) throw new Error('Error eliminando');
+                loadInstitutos();
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+        }
+        
+        // Load institutos on init
+        loadInstitutos();
+    </script>
+</body>
+</html>
