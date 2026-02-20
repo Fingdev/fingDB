@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>fingDB - Grafo de Previas</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><path fill='%2358a6ff' d='M464 48c0-26.5-21.5-48-48-48H96c-26.5 0-48 21.5-48 48v320c0 26.5 21.5 48 48 48h320c26.5 0 48-21.5 48-48V48zm-72 72v96H120V120h272zm-48 64c0-8.8-7.2-16-16-16H152c-8.8 0-16 7.2-16 16v16c0 8.8 7.2 16 16 16h136c8.8 0 16-7.2 16-16v-16zM152 296c0-8.8-7.2-16-16-16H120c-8.8 0-16 7.2-16 16v16c0 8.8 7.2 16 16 16h16c8.8 0 16-7.2 16-16v-16zm80 0c0-8.8-7.2-16-16-16h-16c-8.8 0-16 7.2-16 16v16c0 8.8 7.2 16 16 16h16c8.8 0 16-7.2 16-16v-16zm80 0c0-8.8-7.2-16-16-16h-16c-8.8 0-16 7.2-16 16v16c0 8.8 7.2 16 16 16h16c8.8 0 16-7.2 16-16v-16zm80 0c0-8.8-7.2-16-16-16h-16c-8.8 0-16 7.2-16 16v16c0 8.8 7.2 16 16 16h16c8.8 0 16-7.2 16-16v-16zM152 408c0-8.8-7.2-16-16-16H120c-8.8 0-16 7.2-16 16v16c0 8.8 7.2 16 16 16h16c8.8 0 16-7.2 16-16v-16zm80 0c0-8.8-7.2-16-16-16h-16c-8.8 0-16 7.2-16 16v16c0 8.8 7.2 16 16 16h16c8.8 0 16-7.2 16-16v-16z'/></svg>">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+
+  <style>
+    :root {
+      --bg-primary: #0d1117;
+      --bg-secondary: #161b22;
+      --bg-tertiary: #21262d;
+      --bg-hover: #30363d;
+      --text-primary: #f0f6fc;
+      --text-secondary: #8b949e;
+      --text-muted: #6e7681;
+      --accent-bisemestral: #58a6ff;
+      --accent-par: #bc8cff;
+      --accent-impar: #f778ba;
+      --border-color: #30363d;
+      --success: #3fb950;
+      --warning: #d29922;
+      --error: #f85149;
+      --purple: #a78bfa;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      overflow: hidden;
+      height: 100%;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-weight: 500;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    #app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    header {
+      background: var(--bg-secondary);
+      padding: 0.875rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-color);
+      gap: 1rem;
+      flex-shrink: 0;
+    }
+
+    header h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      white-space: nowrap;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    header h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      white-space: nowrap;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    header h1 i {
+      color: var(--accent-bisemestral);
+      font-size: 1.125rem;
+    }
+
+    .controls {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .filter-group {
+      display: flex;
+      gap: 0.25rem;
+      background: var(--bg-tertiary);
+      padding: 0.25rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+
+    .filter-btn {
+      padding: 0.375rem 0.75rem;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 0.75rem;
+      font-weight: 600;
+      transition: all 0.15s ease;
+    }
+
+    .filter-btn:hover {
+      color: var(--text-primary);
+      background: var(--bg-hover);
+    }
+
+    .filter-btn.active {
+      background: var(--accent-bisemestral);
+      color: var(--bg-primary);
+      box-shadow: 0 2px 8px rgba(88, 166, 255, 0.3);
+    }
+
+    button.icon-btn {
+      padding: 0.5rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+    }
+
+    button.icon-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+      border-color: var(--text-muted);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    button.icon-btn.login-btn {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--bg-primary);
+    }
+
+    button.icon-btn.login-btn:hover {
+      background: #4393eb;
+    }
+
+    .github-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      transition: all 0.15s ease;
+    }
+
+    .github-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+      border-color: var(--text-muted);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-primary {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 0.625rem 1.25rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: inline-block;
+    }
+
+    .btn-primary:hover {
+      background: #2563eb;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .graph-container {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      background: radial-gradient(ellipse at 50% 30%, #0f1923 0%, var(--bg-primary) 60%);
+    }
+
+    #graph {
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      position: relative;
+    }
+    
+    #graph svg {
+      display: block;
+    }
+    
+    #graph svg g.smooth-transition {
+      transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .sidebar {
+      width: 300px;
+      background: var(--bg-secondary);
+      border-left: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      z-index: 100;
+      box-shadow: -8px 0 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .sidebar.collapsed {
+      transform: translateX(100%);
+    }
+
+    .sidebar-toggle {
+      display: none;
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 99;
+      width: 3.5rem;
+      height: 3.5rem;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-bisemestral), var(--accent-par));
+      color: white;
+      border: none;
+      font-size: 1.25rem;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(88, 166, 255, 0.4);
+      transition: all 0.2s ease;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sidebar-toggle:hover {
+      transform: scale(1.1);
+      box-shadow: 0 8px 24px rgba(88, 166, 255, 0.5);
+    }
+
+    .sidebar-toggle.visible {
+      display: flex;
+    }
+
+    @media (max-width: 768px) {
+      header {
+        padding: 0.75rem 1rem;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      h1 {
+        font-size: 1rem;
+      }
+
+      .controls {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .filter-group {
+        order: 3;
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 0.25rem;
+      }
+
+      .filter-btn {
+        white-space: nowrap;
+        padding: 0.5rem 0.75rem;
+      }
+
+      .career-select, .profile-select {
+        max-width: none;
+        flex: 1;
+        min-width: 120px;
+      }
+
+      .sidebar {
+        width: 85%;
+        max-width: 320px;
+      }
+
+      .sidebar-toggle {
+        display: flex;
+      }
+
+      .legend {
+        bottom: 5rem;
+        left: 0.5rem;
+        right: 0.5rem;
+        font-size: 0.625rem;
+        padding: 0.5rem;
+      }
+
+      .legend-items {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      .modal {
+        width: 100%;
+        max-width: 100%;
+        height: 100%;
+        max-height: 100%;
+        border-radius: 0;
+        animation: modalSlideUp 0.3s ease;
+      }
+
+      @keyframes modalSlideUp {
+        from { 
+          opacity: 0;
+          transform: translateY(100%);
+        }
+        to { 
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .modal-body {
+        max-height: calc(100vh - 60px);
+        padding: 1rem;
+      }
+
+      .modal-row {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .modal-field {
+        flex: none;
+        width: 100%;
+      }
+
+      .previas-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .modal-title {
+        font-size: 1rem;
+      }
+    }
+
+    .sidebar-header {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border-color);
+      background: var(--bg-tertiary);
+    }
+
+    .sidebar-title {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 0.75rem;
+    }
+
+    .search-wrapper {
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 0.625rem 0.875rem 0.625rem 2.25rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-size: 0.8125rem;
+      outline: none;
+      transition: all 0.15s ease;
+    }
+
+    .search-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .search-input:focus {
+      border-color: var(--accent-bisemestral);
+      box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      pointer-events: none;
+    }
+
+    .sidebar-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+    }
+
+    .materia-item {
+      padding: 0.75rem;
+      background: var(--bg-tertiary);
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+    }
+
+    .materia-item:hover {
+      background: var(--bg-hover);
+      transform: translateX(-2px);
+      border-color: var(--border-color);
+    }
+
+    .materia-item.highlighted {
+      border-color: var(--accent-bisemestral);
+      background: rgba(88, 166, 255, 0.1);
+      box-shadow: 0 0 0 1px var(--accent-bisemestral);
+    }
+
+    .materia-item-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .periodo-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .career-select, .profile-select {
+      padding: 0.5rem 0.75rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      outline: none;
+      cursor: pointer;
+      max-width: 220px;
+      transition: all 0.15s ease;
+    }
+
+    .career-select:hover, .profile-select:hover {
+      border-color: var(--text-muted);
+    }
+
+    .career-select:focus, .profile-select:focus {
+      border-color: var(--accent-bisemestral);
+      box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15);
+    }
+
+    .toggle-switch {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .toggle-switch input {
+      display: none;
+    }
+
+    .toggle-slider {
+      position: relative;
+      width: 40px;
+      height: 22px;
+      background: var(--bg-tertiary);
+      border-radius: 11px;
+      border: 1px solid var(--border-color);
+      transition: all 0.2s ease;
+    }
+
+    .toggle-slider::before {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 16px;
+      height: 16px;
+      background: var(--text-muted);
+      border-radius: 50%;
+      transition: all 0.2s ease;
+    }
+
+    .toggle-switch input:checked + .toggle-slider {
+      background: var(--accent-bisemestral);
+      border-color: var(--accent-bisemestral);
+    }
+
+    .toggle-switch input:checked + .toggle-slider::before {
+      transform: translateX(18px);
+      background: white;
+    }
+
+    .toggle-label {
+      color: var(--text-secondary);
+      font-size: 0.8125rem;
+      font-weight: 500;
+    }
+
+    .filter-label {
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-right: 0.25rem;
+    }
+
+    .node-obligatoria {
+      stroke: #3fb950 !important;
+    }
+
+    .node-opcional {
+      stroke: #58a6ff !important;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+    }
+
+    .legend-swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+    }
+
+    .periodo-dot.bisemestral { background: var(--accent-bisemestral); }
+    .periodo-dot.par { background: var(--accent-par); }
+    .periodo-dot.impar { background: var(--accent-impar); }
+
+    .materia-item-name {
+      font-weight: 600;
+      font-size: 0.8125rem;
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .materia-item-meta {
+      font-size: 0.6875rem;
+      color: var(--text-muted);
+      margin-top: 0.375rem;
+      padding-left: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .materia-item-meta .creditos {
+      color: var(--purple);
+      font-weight: 600;
+    }
+
+    .legend {
+      position: absolute;
+      bottom: 1.25rem;
+      left: 1.25rem;
+      background: rgba(22, 27, 34, 0.95);
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      font-size: 0.6875rem;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .legend-title {
+      font-weight: 700;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+      font-size: 0.625rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .legend-items {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+    }
+
+    .legend-color {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      box-shadow: 0 0 8px currentColor;
+    }
+
+    .loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid var(--border-color);
+      border-top-color: var(--accent-bisemestral);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .error {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(248, 81, 73, 0.15);
+      border: 1px solid var(--error);
+      color: var(--error);
+      padding: 1rem 1.5rem;
+      border-radius: 10px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      box-shadow: 0 4px 20px rgba(248, 81, 73, 0.2);
+    }
+
+    .link {
+      fill: none;
+      stroke: #8b949e;
+      stroke-width: 1.5px;
+      stroke-opacity: 0.6;
+      transition: stroke-opacity 0.2s;
+    }
+
+    .link.incoming {
+      stroke: #f85149;
+      stroke-opacity: 1;
+      stroke-width: 2.5px;
+    }
+
+    .link.outgoing {
+      stroke: #3fb950;
+      stroke-opacity: 1;
+      stroke-width: 2.5px;
+    }
+
+    .link.dimmed {
+      stroke-opacity: 0.15;
+    }
+
+    .node-card {
+      cursor: pointer;
+    }
+
+    .node-card rect {
+      /* Los estilos se aplican dinámicamente desde D3.js */
+      rx: 8;
+      ry: 8;
+      transition: all 0.2s ease;
+    }
+
+    .node-card text {
+      fill: var(--text-primary);
+      font-size: 10px;
+      font-weight: 600;
+      pointer-events: none;
+    }
+
+    .node-card .creditos {
+      fill: var(--purple);
+      font-size: 9px;
+      font-weight: 700;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.75);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      backdrop-filter: blur(8px);
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-overlay.clickable {
+      cursor: pointer;
+    }
+
+    .modal {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      width: 90%;
+      max-height: 85vh;
+      overflow: hidden;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+      animation: modalSlideIn 0.3s ease;
+    }
+
+    @keyframes modalSlideIn {
+      from { 
+        opacity: 0;
+        transform: scale(0.95) translateY(20px);
+      }
+      to { 
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .modal-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-tertiary);
+    }
+
+    .modal-title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .modal-close {
+      background: var(--bg-hover);
+      border: none;
+      color: var(--text-secondary);
+      font-size: 1.25rem;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 8px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+
+    .modal-close:hover {
+      background: var(--error);
+      color: white;
+      line-height: 1;
+      transition: color 0.15s;
+    }
+
+    .modal-close:hover {
+      color: var(--text-primary);
+    }
+
+    .modal-body {
+      padding: 1.25rem;
+      overflow-y: auto;
+      max-height: calc(85vh - 60px);
+    }
+
+    .modal-row {
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .modal-field {
+      flex: 1;
+    }
+
+    .modal-label {
+      font-size: 0.625rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 0.375rem;
+      font-weight: 600;
+    }
+
+    .modal-value {
+      font-size: 0.9375rem;
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .modal-value.creditos-value {
+      color: var(--purple);
+    }
+
+    .modal-tag {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .modal-tag.bisemestral {
+      background: rgba(88, 166, 255, 0.15);
+      color: var(--accent-bisemestral);
+    }
+
+    .modal-tag.par {
+      background: rgba(188, 140, 255, 0.15);
+      color: var(--accent-par);
+    }
+
+    .modal-tag.impar {
+      background: rgba(247, 120, 186, 0.15);
+      color: var(--accent-impar);
+    }
+
+    .previas-section {
+      margin-top: 1rem;
+    }
+
+    .previas-section h4 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+    }
+
+    .previas-section h4 .count {
+      background: var(--bg-tertiary);
+      padding: 0.125rem 0.375rem;
+      border-radius: 3px;
+      font-size: 0.625rem;
+      font-weight: 500;
+    }
+
+    .previas-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.375rem;
+    }
+
+    .prev-chip {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.375rem 0.5rem;
+      background: var(--bg-tertiary);
+      border-radius: 4px;
+      font-size: 0.75rem;
+    }
+
+    .prev-chip .dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+    }
+
+    .prev-chip .dot.aprobado {
+      background: var(--success);
+    }
+
+    .prev-chip .dot.exonerado {
+      background: var(--warning);
+    }
+
+    .no-previas {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      font-style: italic;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+    }
+
+    .status-badge.active {
+      color: var(--success);
+    }
+
+    .status-badge.inactive {
+      color: var(--accent-danger);
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1><i class="fas fa-database"></i> fingDB</h1>
+      <div class="controls">
+        <button v-if="!isLoggedIn" class="icon-btn login-btn" @click="showLoginModal = true" title="Iniciar sesión">🔑</button>
+        <button v-if="isLoggedIn" class="icon-btn" @click="logout" title="Cerrar sesión">🚪</button>
+        <a href="https://github.com/emiliano-gandini-outeda" target="_blank" class="github-btn">
+          Saber más
+        </a>
+        <button v-if="isLoggedIn" class="icon-btn" @click="goToAdmin" title="Panel de Admin">⚙️</button>
+        <button class="icon-btn" @click="resetView" title="Centrar vista">⌂</button>
+      </div>
+    </header>
+    <div class="main-content">
+      <div class="graph-container">
+        <div id="graph"></div>
+        <div v-if="loading" class="loading">
+          <div class="spinner"></div>
+          <span>Cargando...</span>
+        </div>
+        <div v-if="error" class="error">{{ error }}</div>
+        <div class="legend">
+          <div class="legend-title">Período</div>
+          <div class="legend-items">
+            <div class="legend-item">
+              <div class="legend-color" style="background: var(--accent-bisemestral);"></div>
+              <span>Bise.</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color" style="background: var(--accent-par);"></div>
+              <span>Par</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color" style="background: var(--accent-impar);"></div>
+              <span>Impar</span>
+            </div>
+          </div>
+          <div v-if="selectedCareer" class="legend-title" style="margin-top: 0.5rem;">Carrera</div>
+          <div v-if="selectedCareer" class="legend-items">
+            <div class="legend-item">
+              <div class="legend-swatch" style="background: #ffffff;"></div>
+              <span>Obligatoria</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-swatch" style="background: #d4a72c;"></div>
+              <span>Opcional</span>
+            </div>
+          </div>
+          <div v-if="selectedProfile" class="legend-title" style="margin-top: 0.5rem;">Perfil</div>
+          <div v-if="selectedProfile" class="legend-items">
+            <div class="legend-item">
+              <div class="legend-swatch" style="background: #f0883e;"></div>
+              <span>Obligatoria de Perfil</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="sidebar" :class="{ collapsed: sidebarCollapsed }">
+        <div class="sidebar-header">
+          <div class="sidebar-title">Materias ({{ filteredMaterias.length }})</div>
+          <div class="search-wrapper">
+            <span class="search-icon">⌕</span>
+            <input type="text" class="search-input" v-model="searchQuery" placeholder="Buscar..." @input="onSearchInput">
+          </div>
+          <div style="margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.25rem;">
+            <select class="career-select" style="width: 100%;" v-model="selectedCareer">
+              <option :value="null">Sin carrera</option>
+              <option v-for="c in carreras" :key="c.id" :value="c">{{ c.name }}</option>
+            </select>
+            <select v-if="selectedCareer && selectedCareer.perfiles && selectedCareer.perfiles.length > 0" class="profile-select" style="width: 100%;" v-model="selectedProfile">
+              <option :value="null">Sin perfil</option>
+              <option v-for="p in perfiles" :key="p.id" :value="p">{{ p.name }}</option>
+            </select>
+            <label class="toggle-switch">
+              <input type="checkbox" v-model="mathInitEnabled" @change="onMathInitChange">
+              <span class="toggle-slider"></span>
+              <span class="toggle-label">Matemática Inicial</span>
+            </label>
+          </div>
+        </div>
+        <div class="sidebar-content">
+          <div 
+            v-for="materia in filteredMaterias" 
+            :key="materia.id" 
+            class="materia-item"
+            :class="{ highlighted: highlightedId === materia.id }"
+             @click="focusAndOpenModal(materia.id, false)"
+          >
+            <div class="materia-item-header">
+              <div class="periodo-dot" :class="materia.periodo"></div>
+              <div class="materia-item-name">{{ materia.name }}</div>
+            </div>
+            <div class="materia-item-meta">
+              {{ capitalize(materia.periodo) }} · {{ materia.creditos || 0 }} créd.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="sidebar-toggle" :class="{ visible: isMobile }" @click="toggleSidebar">
+      {{ sidebarCollapsed ? '☰' : '✕' }}
+    </button>
+
+    <div v-if="selectedMateria" class="modal-overlay clickable" @click="closeModal">
+      <div class="modal" @click.stop>
+        <div class="modal-header">
+          <span class="modal-title">{{ selectedMateria.name }}</span>
+          <button class="modal-close" @click="closeModal">×</button>
+        </div>
+          <div class="modal-body">
+           <div class="modal-row">
+             <div class="modal-field">
+               <div class="modal-label">Instituto</div>
+               <div class="modal-value">{{ getInstitutoName(selectedMateria.instituto_id) }}</div>
+             </div>
+           </div>
+           <div class="modal-row">
+             <div class="modal-field">
+               <div class="modal-label">Período</div>
+               <div class="modal-value">
+                 <span class="modal-tag" :class="selectedMateria.periodo">{{ capitalize(selectedMateria.periodo) }}</span>
+               </div>
+             </div>
+             <div class="modal-field">
+               <div class="modal-label">Créditos</div>
+               <div class="modal-value creditos-value">{{ selectedMateria.creditos || 0 }}</div>
+             </div>
+           </div>
+          
+          <div class="previas-section" v-if="selectedMateria.previas_aprobado && selectedMateria.previas_aprobado.length">
+            <h4>Previas Aprobadas <span class="count">{{ selectedMateria.previas_aprobado.length }}</span></h4>
+            <div class="previas-grid">
+              <div v-for="prev in selectedMateria.previas_aprobado" :key="prev.id" class="prev-chip">
+                <span class="dot aprobado"></span>
+                {{ prev.name }}
+              </div>
+            </div>
+          </div>
+          
+          <div class="previas-section" v-if="selectedMateria.previas_exonerado && selectedMateria.previas_exonerado.length">
+            <h4>Previas Exoneradas <span class="count">{{ selectedMateria.previas_exonerado.length }}</span></h4>
+            <div class="previas-grid">
+              <div v-for="prev in selectedMateria.previas_exonerado" :key="prev.id" class="prev-chip">
+                <span class="dot exonerado"></span>
+                {{ prev.name }}
+              </div>
+            </div>
+          </div>
+          
+          <div class="previas-section" v-if="(!selectedMateria.previas_aprobado || !selectedMateria.previas_aprobado.length) && (!selectedMateria.previas_exonerado || !selectedMateria.previas_exonerado.length)">
+            <p class="no-previas">Sin previas</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="showLoginModal" class="modal-overlay clickable" @click="showLoginModal = false">
+      <div class="modal" @click.stop style="max-width: 400px;">
+        <div class="modal-header">
+          <span class="modal-title">Iniciar Sesión</span>
+          <button class="modal-close" @click="showLoginModal = false">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="modal-field" style="margin-bottom: 1rem;">
+            <div class="modal-label">Usuario</div>
+            <input type="text" v-model="loginUsername" class="search-input" style="width: 100%;" placeholder="Usuario admin">
+          </div>
+          <div class="modal-field" style="margin-bottom: 1rem;">
+            <div class="modal-label">Contraseña</div>
+            <input type="password" v-model="loginPassword" class="search-input" style="width: 100%;" placeholder="Contraseña" @keyup.enter="doLogin">
+          </div>
+          <div v-if="loginError" style="color: var(--error); margin-bottom: 1rem; font-size: 0.875rem;">{{ loginError }}</div>
+          <button class="btn-primary" style="width: 100%;" @click="doLogin" :disabled="loginLoading">
+            {{ loginLoading ? 'Ingresando...' : 'Iniciar Sesión' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+<script src="/graph.js"></script>
+</body>
+</html>
