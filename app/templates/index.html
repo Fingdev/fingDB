@@ -193,6 +193,10 @@
                             <input type="number" name="creditos" required min="0" value="0" placeholder="Ej: 10">
                         </div>
                         <div class="form-group">
+                            <label>Mín. Créditos</label>
+                            <input type="number" name="min_creditos" min="0" value="" placeholder="Opcional">
+                        </div>
+                        <div class="form-group">
                             <label>Instituto</label>
                             <select name="instituto_id" id="materiaInstitutoSelect" required>
                                 <option value="">Seleccionar...</option>
@@ -236,13 +240,14 @@
                             <th>Código</th>
                             <th>Período</th>
                             <th>Créditos</th>
+                            <th>Min. Créditos</th>
                             <th>Instituto</th>
                             <th>Previas</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody id="materiasList">
-                        <tr><td colspan="8" class="empty">Cargando...</td></tr>
+                        <tr><td colspan="9" class="empty">Cargando...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -393,6 +398,10 @@
                     <div class="form-group">
                         <label>Créditos</label>
                         <input type="number" name="creditos" id="editCreditos" required min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Mín. Créditos</label>
+                        <input type="number" name="min_creditos" id="editMinCreditos" min="0" value="" placeholder="Opcional">
                     </div>
                     <div class="form-group">
                         <label>Instituto</label>
@@ -792,7 +801,7 @@
         function renderMaterias(materias) {
             if (materias.length === 0) {
                 document.getElementById('materiasList').innerHTML = 
-                    '<tr><td colspan="8" class="empty">No hay materias</td></tr>';
+                    '<tr><td colspan="9" class="empty">No hay materias</td></tr>';
                 return;
             }
             
@@ -819,10 +828,11 @@
                         <td>${m.codigo || '-'}</td>
                         <td class="${periodoClass}">${periodoLabel}</td>
                         <td>${m.creditos || 0}</td>
+                        <td>${m.min_creditos || '-'}</td>
                         <td>${window.institutoMap && window.institutoMap[m.instituto_id] ? window.institutoMap[m.instituto_id] : (m.instituto_id || '-')}</td>
                         <td>${previasHtml || '<span style="color:#9ca3af">Sin previas</span>'}</td>
                         <td>
-                            <button class="btn-secondary btn-sm" onclick="openEdit(${m.id}, '${m.name}', '${m.codigo || ''}', '${m.periodo}', ${JSON.stringify(m.previas_aprobado.map(p => p.id))}, ${JSON.stringify(m.previas_exonerado.map(p => p.id))}, ${m.creditos || 0}, ${m.instituto_id || 0})">✏️</button>
+                            <button class="btn-secondary btn-sm" onclick="openEdit(${m.id}, '${m.name}', '${m.codigo || ''}', '${m.periodo}', ${JSON.stringify(m.previas_aprobado.map(p => p.id))}, ${JSON.stringify(m.previas_exonerado.map(p => p.id))}, ${m.creditos || 0}, ${m.min_creditos || 0}, ${m.instituto_id || 0})">✏️</button>
                             <button class="btn-danger btn-sm" onclick="deleteMateria(${m.id})">🗑️</button>
                         </td>
                     </tr>
@@ -866,12 +876,13 @@
             }
         });
         
-        function openEdit(id, name, codigo, periodo, previasAprobado, previasExonerado, creditos = 0, institutoId = 0) {
+        function openEdit(id, name, codigo, periodo, previasAprobado, previasExonerado, creditos = 0, minCreditos = 0, institutoId = 0) {
             document.getElementById('editId').value = id;
             document.getElementById('editName').value = name;
             document.getElementById('editCodigo').value = codigo || '';
             document.getElementById('editPeriodo').value = periodo;
             document.getElementById('editCreditos').value = creditos;
+            document.getElementById('editMinCreditos').value = minCreditos || '';
             
             // Set the Instituto select
             setTimeout(function() {

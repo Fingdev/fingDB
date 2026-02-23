@@ -70,6 +70,7 @@ async def create_materia(
     codigo = data.get("codigo") or None
     periodo = data.get("periodo")
     creditos = int(data.get("creditos", 0) or 0)
+    min_creditos = int(data.get("min_creditos", 0) or 0) or None
     instituto_id = int(data.get("instituto_id", 0) or 0)
     previas_aprobado = str(data.get("previas_aprobado", "")) or ""
     previas_exonerado = str(data.get("previas_exonerado", "")) or ""
@@ -82,6 +83,7 @@ async def create_materia(
         codigo=codigo,
         periodo=periodo,
         creditos=creditos,
+        min_creditos=min_creditos,
         instituto_id=instituto_id,
     )
     db.add(nueva)
@@ -131,6 +133,7 @@ async def update_materia(
     codigo: str = data.get("codigo") or None
     periodo: str = data.get("periodo") or "bisemestral"
     creditos: int = int(data.get("creditos", 0) or 0)
+    min_creditos: int = int(data.get("min_creditos", 0) or 0) or None
     instituto_id: int = int(data.get("instituto_id", 0) or 0)
     previas_aprobado: str = data.get("previas_aprobado") or ""
     previas_exonerado: str = data.get("previas_exonerado") or ""
@@ -147,6 +150,7 @@ async def update_materia(
     if periodo:
         materia.periodo = periodo
     materia.creditos = creditos
+    materia.min_creditos = min_creditos
     if instituto_id:
         materia.instituto_id = instituto_id
 
@@ -249,6 +253,7 @@ async def get_all_materias_con_previas(
                 "codigo": m.codigo,
                 "periodo": m.periodo.value,
                 "creditos": m.creditos,
+                "min_creditos": m.min_creditos,
                 "instituto_id": m.instituto_id,
                 "active": m.active,
                 "created_at": m.created_at.isoformat() if m.created_at else None,

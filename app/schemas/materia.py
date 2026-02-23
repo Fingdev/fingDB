@@ -25,6 +25,7 @@ class MateriaBase(BaseModel):
     codigo: Optional[str] = None
     periodo: PeriodoEnum
     creditos: int = 0
+    min_creditos: Optional[int] = None
     instituto_id: int
 
 

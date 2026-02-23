@@ -290,6 +290,7 @@ const API_CONFIG = {
               codigo: m.codigo || null,
               periodo: m.periodo,
               creditos: m.creditos || 0,
+              min_creditos: m.min_creditos || null,
               instituto_id: m.instituto_id,
               hasPrevia: ((m.previas_aprobado?.length || 0) > 0) || ((m.previas_exonerado?.length || 0) > 0)
             };
@@ -635,6 +636,7 @@ const API_CONFIG = {
                   materia_codigo: materia.codigo || null,
                   materia_periodo: materia.periodo,
                   materia_creditos: materia.creditos,
+                  materia_min_creditos: materia.min_creditos || null,
                   instituto_id: materia.instituto_id
                 });
               }
@@ -697,7 +699,7 @@ const API_CONFIG = {
               .attr('x', nodeWidth / 2)
               .attr('y', nodeHeight - 10)
               .attr('text-anchor', 'middle')
-              .text(`${d.creditos} créd.`);
+              .text(d.min_creditos ? `${d.creditos} créd. (mín: ${d.min_creditos})` : `${d.creditos} créd.`);
           });
         }
 
@@ -752,6 +754,7 @@ const API_CONFIG = {
               codigo: m.codigo || null,
               periodo: m.periodo,
               creditos: m.creditos || 0,
+              min_creditos: m.min_creditos || null,
               instituto_id: m.instituto_id,
               hasPrevia: ((m.previas_aprobado?.length || 0) > 0) || ((m.previas_exonerado?.length || 0) > 0)
             }));

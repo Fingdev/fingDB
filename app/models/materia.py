@@ -65,6 +65,7 @@ class Materia(Base):
         nullable=False,
     )
     creditos: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    min_creditos: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
 
     active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
