@@ -1070,6 +1070,14 @@
           <span class="modal-title">{{ selectedMateria.name }}</span>
           <button class="modal-close" @click="closeModal">×</button>
         </div>
+          <div class="modal-body" v-if="selectedMateria.codigo">
+            <div class="modal-row">
+              <div class="modal-field">
+                <div class="modal-label">Código</div>
+                <div class="modal-value codigo-value">{{ selectedMateria.codigo }}</div>
+              </div>
+            </div>
+          </div>
           <div class="modal-body">
            <div class="modal-row">
              <div class="modal-field">
@@ -1140,6 +1148,6 @@
       </div>
     </div>
   </div>
-<script src="graph.js?v=3"></script>
+<script src="graph.js?v=5"></script>
 </body>
 </html>

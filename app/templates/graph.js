@@ -282,15 +282,18 @@ const API_CONFIG = {
             materiasList = materiasList.filter(m => careerMateriaIds.has(Number(m.id)));
           }
           
-          const nodes = materiasList.map(m => ({
-            id: m.id,
-            name: m.name,
-            codigo: m.codigo || null,
-            periodo: m.periodo,
-            creditos: m.creditos || 0,
-            instituto_id: m.instituto_id,
-            hasPrevia: ((m.previas_aprobado?.length || 0) > 0) || ((m.previas_exonerado?.length || 0) > 0)
-          }));
+          const nodes = materiasList.map(m => {
+            console.log('Mapping materia:', m.name, 'codigo:', m.codigo);
+            return {
+              id: m.id,
+              name: m.name,
+              codigo: m.codigo || null,
+              periodo: m.periodo,
+              creditos: m.creditos || 0,
+              instituto_id: m.instituto_id,
+              hasPrevia: ((m.previas_aprobado?.length || 0) > 0) || ((m.previas_exonerado?.length || 0) > 0)
+            };
+          });
           
           const links = [];
           
@@ -678,6 +681,7 @@ const API_CONFIG = {
             });
             
             if (d.codigo) {
+              console.log('Rendering codigo:', d.codigo, 'for materia:', d.name);
               group.append('text')
                 .attr('class', 'codigo')
                 .attr('x', nodeWidth / 2)
