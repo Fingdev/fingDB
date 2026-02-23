@@ -2,7 +2,8 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
-RUN mkdir -p /data
+RUN mkdir -p /app/data
+RUN chmod -R 777 /app/data
 
 RUN pip install uv
 
