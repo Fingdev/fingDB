@@ -1,0 +1,13 @@
+.git
+.gitignore
+.venv
+.ruff_cache
+.env
+*.db
+*.pyc
+__pycache__
+.pytest_cache
+*.md
+run.sh
+migrations
+.ssh
