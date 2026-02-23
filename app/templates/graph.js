@@ -140,22 +140,39 @@ const API_CONFIG = {
         }
 
         function onCareerChange() {
+          const oldCareer = selectedCareer.value ? selectedCareer.value.name : null;
           selectedProfile.value = null;
           if (selectedCareer.value) {
+            sendEvent('career_select', {
+              career_id: selectedCareer.value.id,
+              career_name: selectedCareer.value.name,
+              previous_career: oldCareer
+            });
             loadPerfiles(selectedCareer.value.id).then(function() {
               renderGraph();
             });
           } else {
             perfiles.value = [];
+            sendEvent('career_deselect', { previous_career: oldCareer });
             renderGraph();
           }
         }
         
         function onProfileChange() {
+          if (selectedProfile.value) {
+            sendEvent('profile_select', {
+              profile_id: selectedProfile.value.id,
+              profile_name: selectedProfile.value.name,
+              career_id: selectedCareer.value ? selectedCareer.value.id : null
+            });
+          }
           setTimeout(function() { renderGraph(); }, 100);
         }
         
         function onMathInitChange() {
+          sendEvent('math_init_toggle', {
+            enabled: mathInitEnabled.value
+          });
           setTimeout(function() { renderGraph(); }, 100);
         }
 
@@ -598,7 +615,18 @@ const API_CONFIG = {
             })
             .on('click', function(event, d) {
               event.stopPropagation();
-              selectedMateria.value = materias.value.find(m => m.id === d.id);
+              const materia = materias.value.find(m => m.id === d.id);
+              selectedMateria.value = materia;
+              if (materia) {
+                sendEvent('materia_click', {
+                  materia_id: materia.id,
+                  materia_name: materia.name,
+                  materia_codigo: materia.codigo || null,
+                  materia_periodo: materia.periodo,
+                  materia_creditos: materia.creditos,
+                  instituto_id: materia.instituto_id
+                });
+              }
             });
 
           node.append('circle')
@@ -641,6 +669,17 @@ const API_CONFIG = {
                 .text(line);
             });
             
+            if (d.codigo) {
+              group.append('text')
+                .attr('class', 'codigo')
+                .attr('x', nodeWidth / 2)
+                .attr('y', nodeHeight - 22)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '10px')
+                .attr('fill', '#8b949e')
+                .text(d.codigo);
+            }
+            
             group.append('text')
               .attr('class', 'creditos')
               .attr('x', nodeWidth / 2)
@@ -653,6 +692,16 @@ const API_CONFIG = {
         function focusAndOpenModal(id, openModal = true) {
           try {
             if (!g) return;
+            
+            const materia = materias.value.find(m => m.id === id);
+            if (materia) {
+              sendEvent('materia_focus', {
+                materia_id: materia.id,
+                materia_name: materia.name,
+                materia_codigo: materia.codigo || null,
+                open_modal: openModal
+              });
+            }
             
             if (isMobile.value) {
               sidebarCollapsed.value = true;
@@ -1024,11 +1073,51 @@ const API_CONFIG = {
           window.location.href = '/admin';
         }
         
+        function sendMetrics() {
+          const navigationTiming = performance.timing || performance.getEntriesByType('navigation')[0];
+          const loadTime = navigationTiming ? navigationTiming.loadEventEnd - navigationTiming.fetchStart : 0;
+          const domContentLoaded = navigationTiming ? navigationTiming.domContentLoadedEventEnd - navigationTiming.fetchStart : 0;
+          
+          const metricsData = {
+            url: window.location.href,
+            user_agent: navigator.userAgent,
+            screen_width: window.screen.width,
+            screen_height: window.screen.height,
+            viewport_width: window.innerWidth,
+            viewport_height: window.innerHeight,
+            load_time_ms: loadTime,
+            dom_content_loaded_ms: domContentLoaded,
+            timestamp: new Date().toISOString()
+          };
+          
+          fetch('https://api.ego-services.com/metrics', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(metricsData)
+          }).catch(() => {});
+        }
+        
+        function sendEvent(eventType, metadata) {
+          const eventData = {
+            event_type: eventType,
+            metadata: metadata,
+            timestamp: new Date().toISOString(),
+            url: window.location.href
+          };
+          
+          fetch('https://api.ego-services.com/events', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(eventData)
+          }).catch(() => {});
+        }
+        
         onMounted(() => {
           checkLoginStatus();
           loadCarreras().then(function() {
             loadData().then(function() {
               renderGraph();
+              sendMetrics();
             });
           });
           checkMobile();
