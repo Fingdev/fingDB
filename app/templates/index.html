@@ -177,6 +177,10 @@
                             <input type="text" name="name" required placeholder="Ej: Matemáticas I">
                         </div>
                         <div class="form-group">
+                            <label>Código</label>
+                            <input type="text" name="codigo" placeholder="Ej: MAT101">
+                        </div>
+                        <div class="form-group">
                             <label>Período</label>
                             <select name="periodo" required>
                                 <option value="bisemestral">Bisemestral</option>
@@ -229,6 +233,7 @@
                         <tr>
                             <th>ID</th>
                             <th>Nombre</th>
+                            <th>Código</th>
                             <th>Período</th>
                             <th>Créditos</th>
                             <th>Previas</th>
@@ -371,6 +376,10 @@
                     <div class="form-group">
                         <label>Nombre</label>
                         <input type="text" name="name" id="editName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Código</label>
+                        <input type="text" name="codigo" id="editCodigo" placeholder="Ej: MAT101">
                     </div>
                     <div class="form-group">
                         <label>Período</label>
@@ -799,12 +808,13 @@
                     <tr>
                         <td>${m.id}</td>
                         <td><strong>${m.name}</strong></td>
+                        <td>${m.codigo || '-'}</td>
                         <td class="${periodoClass}">${periodoLabel}</td>
                         <td>${m.creditos || 0}</td>
                         <td>${window.institutoMap && window.institutoMap[m.instituto_id] ? window.institutoMap[m.instituto_id] : (m.instituto_id || '-')}</td>
                         <td>${previasHtml || '<span style="color:#9ca3af">Sin previas</span>'}</td>
                         <td>
-                            <button class="btn-secondary btn-sm" onclick="openEdit(${m.id}, '${m.name}', '${m.periodo}', ${JSON.stringify(m.previas_aprobado.map(p => p.id))}, ${JSON.stringify(m.previas_exonerado.map(p => p.id))}, ${m.creditos || 0}, ${m.instituto_id || 0})">✏️</button>
+                            <button class="btn-secondary btn-sm" onclick="openEdit(${m.id}, '${m.name}', '${m.codigo || ''}', '${m.periodo}', ${JSON.stringify(m.previas_aprobado.map(p => p.id))}, ${JSON.stringify(m.previas_exonerado.map(p => p.id))}, ${m.creditos || 0}, ${m.instituto_id || 0})">✏️</button>
                             <button class="btn-danger btn-sm" onclick="deleteMateria(${m.id})">🗑️</button>
                         </td>
                     </tr>
@@ -848,9 +858,10 @@
             }
         });
         
-        function openEdit(id, name, periodo, previasAprobado, previasExonerado, creditos = 0, institutoId = 0) {
+        function openEdit(id, name, codigo, periodo, previasAprobado, previasExonerado, creditos = 0, institutoId = 0) {
             document.getElementById('editId').value = id;
             document.getElementById('editName').value = name;
+            document.getElementById('editCodigo').value = codigo || '';
             document.getElementById('editPeriodo').value = periodo;
             document.getElementById('editCreditos').value = creditos;
             
