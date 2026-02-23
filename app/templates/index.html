@@ -508,14 +508,13 @@
 
     <script>
         const BASE_URL = (function() {
+            const origin = window.location.origin;
             const path = window.location.pathname;
             const lastSlash = path.lastIndexOf('/');
             const basePath = lastSlash > 0 ? path.substring(0, lastSlash) : path;
-            return basePath || '/';
+            console.log('BASE_URL:', origin + (basePath || '/'));
+            return origin + (basePath || '/');
         })();
-        
-        console.log('BASE_URL:', BASE_URL);
-        console.log('Current path:', window.location.pathname);
         
         function getToken() {
             return localStorage.getItem('access_token') || '';

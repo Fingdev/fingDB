@@ -1,10 +1,11 @@
 const API_CONFIG = {
   apiUrl: (function() {
+    const origin = window.location.origin;
     const path = window.location.pathname;
     const lastSlash = path.lastIndexOf('/');
     const basePath = lastSlash > 0 ? path.substring(0, lastSlash) : path;
-    console.log('API_URL base:', basePath, 'path:', path);
-    return basePath || '/';
+    console.log('API_URL:', origin + (basePath || '/'), 'path:', path);
+    return origin + (basePath || '/');
   })(),
   getToken: function() {
     return localStorage.getItem('access_token') || '';
@@ -1051,7 +1052,7 @@ const API_CONFIG = {
               showLoginModal.value = false;
               loginUsername.value = '';
               loginPassword.value = '';
-              window.location.href = '/admin';
+              window.location.href = apiUrl.value + '/admin';
             } else {
               const data = await res.json();
               loginError.value = data.detail || 'Error al iniciar sesión';
@@ -1076,7 +1077,7 @@ const API_CONFIG = {
         }
         
         function goToAdmin() {
-          window.location.href = '/admin';
+          window.location.href = apiUrl.value + '/admin';
         }
         
         function sendMetrics() {
