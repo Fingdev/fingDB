@@ -1,6 +1,6 @@
 # fingDB - Central Database for Fing Projects
 
-[![DeepWiki](https://deepwiki.com/badge-maker?url=https://deepwiki.com/Fingdev/fingDB)](https://deepwiki.com/Fingdev/fingDB)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/Fingdev/fingDB)
 
 Welcome to fingDB! This project is the centralized database for Fingdev projects.
 
