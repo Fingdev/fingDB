@@ -2,7 +2,7 @@
 
 LibrecourseUY
 
-Última actualización: 24 de Febrero de 2026 (Versión 1)
+Última actualización: 28 de Febrero de 2026 (Versión 1.1)
 
 ## 1. Naturaleza del Proyecto
 
