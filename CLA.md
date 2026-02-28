@@ -1,364 +1,137 @@
 # Contributor License Agreement (CLA)
 
-## LibrecourseUY
+## LibreCourseUY
 
-Última actualización: 28 de Febrero de 2026 (Versión 1.2)
-
----
-
-## 1. Naturaleza del Proyecto
-
-LibrecourseUY es una iniciativa independiente, comunitaria y sin fines de lucro, creada por estudiantes para estudiantes.
-
-LibrecourseUY:
-
-* No constituye entidad jurídica formal.
-* No actúa en representación de ninguna institución.
-* No mantiene vínculo contractual con instituciones académicas.
-* Opera de forma voluntaria y abierta.
+**Last updated:** February 28, 2026  
+**Version:** 2.0
 
 ---
 
-## 2. No Afiliación Institucional
+## Preamble
 
-LibrecourseUY no está afiliada, patrocinada, avalada, autorizada ni respaldada oficialmente por ninguna institución académica o dependencia gubernamental.
+LibreCourseUY is an open community dedicated to improving access to knowledge and building useful open resources in the public interest.
 
-⚠️ Cualquier interpretación de oficialidad es incorrecta.
+The project welcomes contributions from students, teachers, developers, researchers, and the general public. It is community-led, independent, and not an official channel of any university, faculty, government body, or private institution.
 
----
-
-## 3. Definición de Contribución
-
-Se considera "Contribución" cualquier envío intencional a repositorios de LibrecourseUY, incluyendo:
-
-* Código fuente
-* Documentación
-* Scripts
-* Infraestructura
-* Assets gráficos
-* Configuración
-* Archivos multimedia
-* Contenido protegido por derechos de autor
+This CLA governs the legal terms under which contributions are submitted and accepted. Community behavior, collaboration norms, and identity rules may also be governed by other project documents, including `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, and `TRADEMARK.md`.
 
 ---
 
-## 4. Declaraciones y Garantías del Contribuyente
+## 1. What counts as a Contribution
 
-Al contribuir, usted declara que:
+A **Contribution** is any material intentionally submitted for inclusion in LibreCourseUY, including source code, documentation, design assets, scripts, translations, datasets, configuration, media, or other copyrightable material.
 
-* Es autor original de la Contribución o posee derechos suficientes para licenciarla.
-* La Contribución no infringe derechos de terceros.
-* No está violando acuerdos laborales, académicos o contractuales.
-* No incluye información confidencial.
-* No incorpora licencias incompatibles con MIT sin autorización expresa.
-
-Si usted es estudiante o funcionario de una institución académica, declara que la Contribución no constituye propiedad institucional exclusiva ni material desarrollado bajo obligación contractual incompatible con este Acuerdo.
+Casual conversation, general feedback, or discussion that is not clearly intended for inclusion in the project does not count as a Contribution.
 
 ---
 
-## 5. Licenciamiento de Contribuciones
+## 2. Your representations
 
-Salvo indicación expresa en un repositorio específico:
+By submitting a Contribution, you represent that:
 
-Todas las Contribuciones se integrarán bajo licencia **MIT**.
+- you have the legal authority to submit it;
+- you are the original author, or you have sufficient rights and permission to submit it under this Agreement;
+- the Contribution does not knowingly infringe third-party rights;
+- the Contribution does not include confidential or restricted material;
+- the Contribution does not violate employment, academic, institutional, or contractual obligations that apply to you; and
+- the Contribution does not introduce license conflicts with the repository's stated license, unless maintainers expressly approve it in writing.
 
-El Contribuyente otorga:
-
-* Licencia perpetua
-* Mundial
-* No exclusiva
-* Irrevocable
-* Libre de regalías
-
-Para usar, modificar, distribuir y sublicenciar la Contribución bajo MIT.
-
-Este Acuerdo no implica cesión total de copyright.
+If you contribute as part of your job, internship, scholarship, funded research, or institutional role, you also represent that you have the authority to do so.
 
 ---
 
-## 6. Licencia de Patentes
+## 3. License grant
 
-En caso de que la Contribución incluya derechos patentables de su titularidad, usted concede licencia mundial, irrevocable y libre de regalías necesaria para ejercer los derechos otorgados bajo MIT.
+Unless a repository clearly states otherwise, accepted Contributions are incorporated under the repository's license, which will normally be the **MIT License**.
 
----
+You grant LibreCourseUY and downstream recipients a perpetual, worldwide, non-exclusive, irrevocable, royalty-free license to use, reproduce, modify, distribute, sublicense, and otherwise exercise the rights necessary to include and distribute your Contribution under the repository's applicable license.
 
-## 7. Política Marcaria y de Identidad Institucional
-
-### 7.1 No licencia de marca
-
-Este Acuerdo no otorga licencia sobre:
-
-* El nombre "LibrecourseUY"
-* Nombres de repositorios
-* Dominios
-* Identidad visual del proyecto
-* Marcas o signos institucionales de terceros
-
-La licencia MIT no constituye licencia marcaria.
-
-### 7.2 Prohibición de uso de signos institucionales
-
-Salvo autorización escrita verificable, está prohibido incorporar:
-
-* Logotipos oficiales de instituciones
-* Escudos o sellos institucionales
-* Identidad visual institucional
-* Material gráfico que sugiera oficialidad
-
-Los mantenedores podrán eliminar cualquier contenido que genere riesgo de confusión institucional.
-
-### 7.3 Prohibición de apariencia de oficialidad
-
-Queda prohibido:
-
-* Presentar repositorios como "oficiales".
-* Utilizar expresiones como "avalado por", "institucional", "certificado por".
-* Diseñar interfaces que simulen canales oficiales.
-
-### 7.4 Facultad de medidas correctivas y rebranding
-
-Para mitigar riesgos legales, LibrecourseUY podrá:
-
-* Modificar nombres de repositorios.
-* Cambiar identidad visual.
-* Retirar contenidos.
-* Exigir correcciones.
-* Renombrar la organización si fuera necesario.
-
-Estas medidas no generan compensación ni derecho a reclamo.
+This Agreement does **not** transfer your entire copyright ownership unless there is a separate written agreement that says so.
 
 ---
 
-# 8. Gobernanza del Proyecto
+## 4. Patent license
 
-## 8.1 Propósito
-
-Esta sección describe cómo se organiza LibrecourseUY, cómo se toman decisiones y cómo se gestionan responsabilidades comunitarias.
-
-Complementa, pero no reemplaza:
-
-* CONTRIBUTING.md
-* CODE_OF_CONDUCT.md
-* TRADEMARK.md
-* Documentación específica de cada repositorio
+If your Contribution includes patentable subject matter that you control, you grant a worldwide, non-exclusive, irrevocable, royalty-free patent license to the extent necessary to use, modify, and distribute the Contribution as part of the project under the applicable repository license.
 
 ---
 
-## 8.2 Carácter Comunitario
+## 5. No trademark or institutional license
 
-LibrecourseUY es una comunidad open source:
+This Agreement does not grant rights to use:
 
-* Independiente
-* No institucional
-* Impulsada por la comunidad
+- the name **LibreCourseUY**;
+- repository or organization names;
+- project logos or visual identity;
+- third-party trademarks; or
+- the names, logos, seals, or institutional identity of universities, faculties, public agencies, or private entities.
 
-Existe para crear, mantener y difundir recursos abiertos para el bien público.
-
----
-
-## 8.3 Principios de Gobernanza
-
-El proyecto se rige por:
-
-* Apertura
-* Claridad
-* Respeto
-* Practicidad
-* Responsabilidad
-* Protección del proyecto
-
-Los mantenedores podrán actuar para proteger:
-
-* Calidad técnica
-* Salud comunitaria
-* Seguridad jurídica
-* Carácter no institucional
+Open source licensing and trademark permission are different things.
 
 ---
 
-## 8.4 Roles
+## 6. Commits and acceptance workflow
 
-### Contribuyentes
+LibreCourseUY may require cryptographically signed commits for traceability and attribution. Signed commits help verify identity and integrity, but they do **not** by themselves replace explicit acceptance of this CLA when the project requires a separate acceptance step.
 
-Participan mediante:
+This CLA is accepted when you confirm it through a project-approved electronic mechanism, such as:
 
-* Issues
-* Pull Requests
-* Documentación
-* Reportes
-* Propuestas
+- an explicit acceptance comment on a pull request;
+- a checkbox or web form;
+- a CLA bot or similar workflow; or
+- another clear electronic acceptance method chosen by the maintainers.
 
-Deben cumplir las normas del proyecto.
-
-### Mantenedores
-
-Responsables de uno o más repositorios.
-
-Pueden:
-
-* Revisar y fusionar PRs
-* Cerrar o priorizar issues
-* Solicitar cambios
-* Moderar discusiones
-* Gestionar releases
-* Actuar ante riesgos legales o técnicos
-
-Deben actuar de buena fe y razonablemente.
-
-### Administradores de la Organización
-
-Pueden:
-
-* Gestionar configuración global
-* Crear o archivar repositorios
-* Designar o remover mantenedores
-* Resolver disputas inter-repositorio
-* Actuar ante riesgos legales, de seguridad o identidad
+The project may refuse to merge Contributions until that acceptance is recorded.
 
 ---
 
-## 8.5 Toma de Decisiones
+## 7. No employment or compensation
 
-Siempre que sea posible:
+Submitting a Contribution does not create:
 
-Las decisiones se tomarán mediante discusión abierta y consenso razonable.
-
-No se requiereunanimidad.
-
-En ausencia de consenso en plazo razonable, el mantenedor o administrador competente podrá decidir y documentar cuando corresponda.
-
----
-
-## 8.6 Alcance de Autoridad
-
-Los mantenedores pueden rechazar contribuciones que sean:
-
-* Fuera de alcance
-* De baja calidad
-* Legalmente riesgosas
-* Engañosas respecto a autoría
-* Incompatibles con estándares
-* Perjudiciales para la sostenibilidad
+- employment;
+- compensation rights;
+- partnership;
+- agency;
+- institutional representation; or
+- authority to act on behalf of LibreCourseUY.
 
 ---
 
-## 8.7 Autonomía de Repositorios
+## 8. Warranty disclaimer and limitation of liability
 
-Cada repositorio puede tener reglas adicionales técnicas, siempre que no contradigan:
+Unless required by law, Contributions and project materials are provided **"AS IS"**, without warranties of any kind, express or implied, including merchantability, fitness for a particular purpose, and non-infringement.
 
-* Normas de conducta
-* Requisitos legales de contribución
-* Protección de identidad
-* Decisiones de gobernanza organizacional
+To the fullest extent permitted by law, LibreCourseUY and its maintainers are not liable for direct, indirect, incidental, special, exemplary, or consequential damages arising from the use, distribution, or inability to use the project or any Contribution.
 
 ---
 
-## 8.8 Designación y Remoción de Mantenedores
+## 9. Irrevocability
 
-No existe derecho automático a ser mantenedor.
+Once a Contribution is accepted and merged, the rights granted under this Agreement are irrevocable, except in cases of material misrepresentation or lack of authority to grant those rights.
 
-Puede designarse en función de:
-
-* Contribuciones sostenidas
-* Juicio técnico
-* Colaboración respetuosa
-* Alineación con objetivos
-
-El acceso podrá ser removido por:
-
-* Inactividad
-* Mal uso de permisos
-* Incumplimiento de normas
-* Conducta perjudicial
-* Riesgos de seguridad
-
-Estas decisiones pueden adoptarse como medida de gobernanza práctica.
+Removing content later from a repository does not automatically revoke rights already granted for existing copies, forks, releases, or prior distributions.
 
 ---
 
-## 8.9 Autoridad de Emergencia
+## 10. Changes to this Agreement
 
-En situaciones urgentes, los mantenedores o administradores podrán actuar inmediatamente ante:
-
-* Incidentes de seguridad
-* Código malicioso
-* Amenazas legales
-* Suplantación
-* Riesgo de confusión institucional
-* Acoso
-
-Podrá brindarse explicación posterior cuando sea apropiado.
+LibreCourseUY may update this CLA in the future. New versions apply only to Contributions submitted after the new version takes effect, unless a contributor expressly agrees otherwise.
 
 ---
 
-## 8.10 Relación con Instituciones
+## 11. Severability
 
-La participación de estudiantes o funcionarios de una institución:
-
-NO convierte a LibrecourseUY en parte de dicha institución.
-
-Ningún participante puede alegar representación institucional sin autorización expresa y verificable.
+If any part of this Agreement is held invalid or unenforceable, the remaining provisions remain in effect.
 
 ---
 
-## 8.11 Modificaciones a la Gobernanza
+## 12. Governing law
 
-La gobernanza podrá actualizarse conforme evolucione la comunidad.
+This Agreement is governed by the laws of the Oriental Republic of Uruguay, excluding conflict-of-law rules, unless mandatory law requires otherwise.
 
-Los cambios podrán ser adoptados por mantenedores o administradores competentes y comunicados cuando corresponda.
-
----
-
-## 9. Firma criptográfica obligatoria (GPG)
-
-Es obligatorio:
-
-* Firmar todos los commits con clave GPG válida.
-* Mantener coherencia entre identidad GitHub y firma.
-
-La firma constituye:
-
-* Aceptación electrónica de este CLA.
-* Reconocimiento de autoría.
-* Consentimiento a sus términos.
-
-Contribuciones sin firma válida podrán ser rechazadas.
+Any dispute arising from this Agreement will be submitted to the competent courts of Montevideo, Uruguay, unless mandatory law requires otherwise.
 
 ---
 
-## 10. Ausencia de Relación Jurídica
-
-Contribuir no:
-
-* Genera relación laboral.
-* Genera compensación económica.
-* Crea sociedad o asociación.
-* Implica representación institucional.
-
----
-
-## 11. Exención de Responsabilidad
-
-El software se proporciona "AS IS", sin garantías.
-
-LibrecourseUY y sus mantenedores no serán responsables por daños derivados de su uso.
-
----
-
-## 12. Irrevocabilidad
-
-La licencia otorgada es irrevocable una vez integrada la Contribución, salvo falsedad en declaraciones del Contribuyente.
-
----
-
-## 13. Aceptación
-
-Se considera aceptado este CLA al:
-
-* Enviar Pull Request con commits firmados.
-* Contribuir contenido incorporado.
-* Manifestar aceptación electrónica si el sistema lo requiere.
-
----
-
-Para más información, visita: https://librecourseuy.github.io/CLA
+For more information, visit: https://librecourseuy.github.io/CLA
