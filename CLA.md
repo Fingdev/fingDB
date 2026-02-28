@@ -1,14 +1,14 @@
 # Contributor License Agreement (CLA)
 
-Fingdev
+LibrecourseUY
 
 Última actualización: 24 de Febrero de 2026 (Versión 1)
 
 ## 1. Naturaleza del Proyecto
 
-Fingdev es una iniciativa independiente, comunitaria y sin fines de lucro, creada por estudiantes para estudiantes.
+LibrecourseUY es una iniciativa independiente, comunitaria y sin fines de lucro, creada por estudiantes para estudiantes.
 
-Fingdev:
+LibrecourseUY:
 
 - No constituye entidad jurídica formal.
 - No actúa en representación de ninguna institución.
@@ -17,20 +17,13 @@ Fingdev:
 
 ## 2. No Afiliación Institucional
 
-Fingdev no está afiliada, patrocinada, avalada, autorizada ni respaldada oficialmente por la Facultad de Ingeniería (FING), la Universidad de la República (Udelar) ni por ninguna otra dependencia académica.
-
-**El uso del término "Fing" en "Fingdev":**
-
-- Tiene carácter descriptivo y comunitario.
-- No implica representación institucional.
-- No implica autorización formal de uso de marca.
-- No crea relación jurídica alguna con FING o Udelar.
+LibrecourseUY no está afiliada, patrocinada, avalada, autorizada ni respaldada oficialmente por ninguna institución académica o dependencia gubernamental.
 
 > ⚠️ Cualquier interpretación de oficialidad es incorrecta.
 
 ## 3. Definición de Contribución
 
-Se considera "Contribución" cualquier envío intencional a repositorios de Fingdev, incluyendo:
+Se considera "Contribución" cualquier envío intencional a repositorios de LibrecourseUY, incluyendo:
 
 - Código fuente
 - Documentación
@@ -81,7 +74,7 @@ En caso de que la Contribución incluya derechos patentables de su titularidad, 
 
 Este Acuerdo no otorga licencia sobre:
 
-- El nombre "Fingdev"
+- El nombre "LibrecourseUY"
 - Nombres de repositorios
 - Dominios
 - Identidad visual del proyecto
@@ -93,7 +86,7 @@ La licencia MIT no constituye licencia marcaria.
 
 Salvo autorización escrita verificable, está prohibido incorporar:
 
-- Logotipos oficiales de FING o Udelar
+- Logotipos oficiales de instituciones
 - Escudos o sellos institucionales
 - Identidad visual institucional
 - Material gráfico que sugiera oficialidad
@@ -108,13 +101,9 @@ Queda prohibido:
 - Utilizar expresiones como "avalado por", "institucional", "certificado por".
 - Diseñar interfaces que simulen canales oficiales.
 
-### 7.4 Uso descriptivo limitado
+### 7.4 Facultad de medidas correctivas y rebranding
 
-Las referencias a FING o Udelar solo podrán realizarse con fines descriptivos y de contexto, sin generar confusión sobre patrocinio o afiliación.
-
-### 7.5 Facultad de medidas correctivas y rebranding
-
-Para mitigar riesgos legales, Fingdev podrá:
+Para mitigar riesgos legales, LibrecourseUY podrá:
 
 - Modificar nombres de repositorios.
 - Cambiar identidad visual.
@@ -126,7 +115,7 @@ Para mitigar riesgos legales, Fingdev podrá:
 
 ## 8. Firma criptográfica obligatoria (GPG)
 
-Para contribuir a Fingdev es **obligatorio**:
+Para contribuir a LibrecourseUY es **obligatorio**:
 
 - Firmar todos los commits con clave GPG válida.
 - Mantener coherencia entre identidad GitHub y firma criptográfica.
@@ -141,7 +130,7 @@ La firma GPG constituye:
 
 ## 9. Ausencia de Relación Jurídica
 
-Contribuir a Fingdev:
+Contribuir a LibrecourseUY:
 
 - No genera relación laboral.
 - No genera compensación económica.
@@ -152,7 +141,7 @@ Contribuir a Fingdev:
 
 El software se proporciona "AS IS", sin garantías de ningún tipo.
 
-Fingdev y sus mantenedores no serán responsables por daños directos o indirectos derivados del uso del software.
+LibrecourseUY y sus mantenedores no serán responsables por daños directos o indirectos derivados del uso del software.
 
 ## 11. Irrevocabilidad
 
@@ -168,4 +157,4 @@ Se considera aceptado este CLA al:
 
 ---
 
-Para más información, visita: https://fingdev.github.io/CLA
+Para más información, visita: https://librecourseuy.github.io/CLA

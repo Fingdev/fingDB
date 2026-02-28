@@ -156,7 +156,7 @@ All commits must be signed. This is a mandatory requirement for contributing.
 ### Setup
 
 Follow our Git Guide to set up your GPG key:
-- [GPG Key Setup](https://fingdev.github.io/git)
+- [GPG Key Setup](https://librecourseuy.github.io/git)
 
 Configure Git to sign commits by default:
 ```bash
@@ -165,13 +165,13 @@ git config --global commit.gpgsign true
 
 ## Contributor License Agreement (CLA)
 
-Before contributing, you must read and accept our [Contributor License Agreement (CLA)](https://fingdev.github.io/CLA).
+Before contributing, you must read and accept our [Contributor License Agreement (CLA)](https://librecourseuy.github.io/CLA).
 
 By submitting a Pull Request with cryptographically signed commits, you acknowledge and agree to the CLA terms. This includes:
 
 - Licensing your contribution under MIT
 - Confirming you have the rights to contribute the code
-- Accepting the project's non-affiliation with FING/Udelar
+- Accepting the project's non-affiliation with any institution
 - Understanding that all commits must be GPG-signed as acceptance of the CLA
 
 Contributions without signed commits or that do not accept the CLA may be rejected.

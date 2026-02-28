@@ -1,14 +1,14 @@
 # fingDB - Central Database for Fing Projects
 
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/Fingdev/fingDB)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/LibrecourseUY/fingDB)
 
-Welcome to fingDB! This project is the centralized database for Fingdev projects.
+Welcome to fingDB! This project is the centralized database for LibrecourseUY projects.
 
 ## What is this project?
 
-fingDB is a database API that stores and serves common information used by different Fingdev projects (like Fingcomms and Fingmap).
+fingDB is a database API that stores and serves common information used by different LibrecourseUY projects (like Fingcomms and Fingmap).
 
-Basically, it's the "brain" that holds data shared between the various Fingdev applications.
+Basically, it's the "brain" that holds data shared between the various LibrecourseUY applications.
 
 ## Tech Stack
 
